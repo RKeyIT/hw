@@ -23,7 +23,7 @@ function convertNumber(num1, num2) {
     return console.log('Некорректный ввод!');
   }
 
-  return console.log(toNumber(num.toString(radix)));
+  return console.log(toNumber(num.toString(radix)) || num.toString(radix));
 }
 
 convertNumber(prompt(), prompt());
