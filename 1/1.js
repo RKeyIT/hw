@@ -17,7 +17,7 @@ function convertNumber(num1, num2) {
   const num = toNumber(num1);
   const radix = toNumber(num2);
   const isSafeNums = Number.isSafeInteger(num) && Number.isSafeInteger(radix);
-  const isSafeRadix = radix < 2 && radix > 36;
+  const isSafeRadix = radix > 1 && radix < 37;
 
   if (!isSafeNums || !isSafeRadix) {
     return console.log('Некорректный ввод!');
@@ -27,13 +27,3 @@ function convertNumber(num1, num2) {
 }
 
 convertNumber(prompt(), prompt());
-
-// convertNumber(10, 2); // 1010
-// convertNumber(872, 8); // 1550
-// convertNumber(2, 'abc'); // "Некорректный ввод!"
-// convertNumber('0', ''); // "Некорректный ввод!"
-// convertNumber('0', 0); // "Некорректный ввод!"
-// convertNumber(0, '0'); // "Некорректный ввод!"
-// convertNumber(0, ''); // "Некорректный ввод!"
-// convertNumber(Infinity, NaN); // "Некорректный ввод!"
-// convertNumber(NaN, Infinity); // "Некорректный ввод!"
