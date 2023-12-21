@@ -10,7 +10,22 @@ Callback-функция, переданная в качестве парамет
 */
 
 Array.prototype.myFilter = function (callback, thisArg = this) {
-  console.log(thisArg);
+  const filteredArray = [];
+
+  for (let i = 0; i < thisArg.length; i++) {
+    const result = callback(thisArg[i], i, thisArg);
+
+    if (result == true) {
+      filteredArray.push(thisArg[i]);
+    }
+  }
+
+  return filteredArray;
 };
 
-[1, 2].myFilter();
+const testArray = [true, 1, NaN, 8.7, '', -Infinity, 3, 2, {}, 3.5, [], 'a'];
+
+const filteredArr = testArray.myFilter((el, i, arr) => {
+  return typeof el === 'number' && !isNaN(el) && isFinite(el);
+});
+console.log(filteredArr);
