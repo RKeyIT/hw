@@ -15,6 +15,25 @@ setTimeout(debounceLog100, 200); // так как задержка в 1000мс �
                                  // происходит через 200 миллисекунд, то таймер запускается заново.
 setTimeout(debounceLog100, 400); // снова сбрасываем таймер ещё через 200 миллисекунд
 */
+const startTime = performance.now();
+
 function createDebounceFunction(callback, delay) {
-  return function () {};
+  let timer;
+
+  return function () {
+    if (timer) {
+      clearTimeout(timer);
+    }
+
+    return (timer = setTimeout(callback, delay));
+  };
 }
+
+const log100 = () => console.log(performance.now() - startTime);
+const debounceLog100 = createDebounceFunction(log100, 1000);
+debounceLog100();
+setTimeout(debounceLog100, 200);
+// так как задержка в 1000мс и новый вызов этой же функции
+// происходит через 200 миллисекунд, то таймер запускается заново.
+
+setTimeout(debounceLog100, 400); // снова сбрасываем таймер ещё через 200 миллисекунд
