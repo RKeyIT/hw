@@ -30,17 +30,11 @@
 2) Кроме этого, естественно, все функции класса должны отрабатывать корректно. 
     Будут проверяться тестами. Однако ещё раз обращаю ваше внимание, что даже 
     при закрытии 100% тестов можно получить очень низкий балл из-за некорректной реализации.
+*/
 
-В репозитории от вас жду один файл с названием stack.js, в котором лежит только 
-реализация вашего класса. Класс, повторюсь, называем Stack. Также, пожалуйста, 
-добавьте в конце файла такую вот операцию:
-
-module.exports = { Stack };
-Это нужно, чтобы мне самостоятельно не дописывать её в каждом вашем файле.
-
+/* 
 Кому будет скучно/недостаточно, можете сделать ещё один класс LinkedList. 
 Конструктор этого класса не должен принимать никаких параметров.
-
 Реализовать публичные методы:
 - append(elem) - добавить элемент в конец связного списка;
 - prepend(elem) - добавить элемент в начало связного списка;
@@ -55,4 +49,77 @@ module.exports = { Stack };
 Если сущность не является итерируемой генерировать ошибку.
 */
 
-class Stack {}
+class Stack {
+  constructor(maxLength = 10) {
+    if (
+      typeof maxLength !== 'number' ||
+      isNaN(maxLength) ||
+      !isFinite(maxLength)
+    ) {
+      throw new Error('Length of Stack should be a valid number!');
+    }
+    this.values = [];
+    this.maxLength = maxLength;
+  }
+
+  static fromIterable(iterable) {
+    const instance = new Stack(iterable.length);
+
+    iterable.forEach((el) => instance.push(el));
+
+    return instance;
+  }
+
+  push(elem) {
+    if (this.values.length >= this.maxLength) {
+      throw new Error('Стек переполнен!');
+    } else {
+      this.values = [...this.values, elem];
+    }
+  }
+
+  pop() {
+    if (this.isEmpty()) {
+      throw new Error('Стек пуст!');
+    } else {
+      const element = this.peek();
+      this.values.length = this.values.length - 1;
+      return element;
+    }
+  }
+
+  peek() {
+    if (this.isEmpty()) {
+      return null;
+    } else {
+      return this.values[this.values.length - 1];
+    }
+  }
+
+  isEmpty() {
+    return !this.values.length;
+  }
+  toArray() {
+    return [...this.values];
+  }
+}
+
+const a = Stack.fromIterable([1, 2, 3]);
+console.log(a);
+
+const stack = new Stack(5);
+stack.push(1);
+stack.push(2);
+stack.push(3);
+stack.push(4);
+stack.push(5);
+// stack.push(6); // Error
+
+console.log(stack.isEmpty());
+console.log(stack.pop());
+console.log(stack.peek());
+console.log(stack.pop());
+console.log(stack.pop());
+console.log(stack.pop());
+console.log(stack.pop());
+// console.log(stack.pop()); // Error
