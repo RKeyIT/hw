@@ -28,4 +28,38 @@ concatStrings('first')('second')('third')().
 Получаем результат: 'some-val333'
 */
 
-function concatStrings() {}
+function concatStrings(string, separator) {
+  function concatIt(anotherString) {
+    if (typeof anotherString !== 'string') {
+      return string;
+    }
+    if (typeof separator !== 'string') {
+      return concatStrings(string + anotherString);
+    }
+    return concatStrings(string + separator + anotherString, separator);
+  }
+
+  return concatIt;
+}
+
+// Custom test cases
+const wordConcatinator = concatStrings('a', 'WORD');
+const slashConcatinator = concatStrings('a', '/');
+const emptyStringConcatinator = concatStrings('a', ' ');
+const nullConcatinator = concatStrings('a', null);
+const zeroConcatinator = concatStrings('a', 0);
+const separatorlessConcatinator = concatStrings('a');
+console.log(wordConcatinator('b')('c')('d')('e')());
+console.log(slashConcatinator('b')('c')('d')('e')());
+console.log(emptyStringConcatinator('b')('c')('d')('e')());
+console.log(nullConcatinator('b')('c')('d')('e')());
+console.log(zeroConcatinator('b')('c')('d')('e')());
+console.log(separatorlessConcatinator('b')('c')('d')('e')());
+
+// Author test cases
+console.log(concatStrings('first')('second')('third')()); // 'firstsecondthird'
+console.log(concatStrings('first', null)('second')()); // 'firstsecond'
+console.log(concatStrings('first', '123')('second')('third')()); // 'first123second123third'
+console.log(concatStrings('some-value')('')('')(null)); // 'some-value'
+console.log(concatStrings('some-value')(2)); // 'some-value'
+console.log(concatStrings('some-value')('333')(123n)); // 'some-val333'
