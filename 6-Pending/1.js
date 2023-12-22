@@ -62,6 +62,7 @@ class Car {
   #currentFuelVolume = 0;
   #isStarted = false;
   #mileage = 0;
+
   constructor(
     brand,
     model,
@@ -86,6 +87,7 @@ class Car {
     if (name.length < 1 || name.length > 50) {
       throw new Error('Длинна названия бренда должна быть от 1 до 50 знаков');
     }
+
     this.#brand = name;
   }
 
@@ -97,6 +99,7 @@ class Car {
     if (name.length < 1 || name.length > 50) {
       throw new Error('Длинна названия модели должна быть от 1 до 50 знаков');
     }
+
     this.#model = name;
   }
 
@@ -108,6 +111,7 @@ class Car {
     if (year < 1900 || year > new Date().getFullYear()) {
       throw new Error('Неверный год производства');
     }
+
     this.#yearOfManufacturing = year;
   }
 
@@ -121,6 +125,7 @@ class Car {
         'Допустимая максимальная скорость в диапазоне от 100 до 300 км/ч'
       );
     }
+
     this.#maxSpeed = speed;
   }
 
@@ -132,6 +137,7 @@ class Car {
     if (volume < 5 || volume > 20) {
       throw new Error('Максимальный объём топлива от 5 до 20 литров');
     }
+
     this.#maxFuelVolume = volume;
   }
 
@@ -162,21 +168,25 @@ class Car {
     if (this.#isStarted) {
       throw new Error('Машина уже заведена');
     }
+
     this.#isStarted = true;
   }
   shutDownEngine() {
     if (!this.#isStarted) {
       throw new Error('Машина ещё не заведена');
     }
+
     this.#isStarted = false;
   }
   fillUpGasTank(liters) {
     if (!Number.isSafeInteger(liters) || liters <= 0) {
       throw new Error('Неверное количество топлива для заправки');
     }
+
     if (this.#currentFuelVolume + liters > this.#maxFuelVolume) {
       throw new Error('Топливный бак переполнен');
     }
+
     this.#currentFuelVolume += liters;
   }
   drive(speed, hours) {
@@ -190,18 +200,23 @@ class Car {
     if (!Number.isSafeInteger(speed) || speed <= 0 || speed > this.maxSpeed) {
       throw new Error('Неверная скорость');
     }
+
     if (isNaN(hours) || !isFinite(hours) || hours <= 0) {
       throw new Error('Неверное количество часов');
     }
+
     if (speed > this.maxSpeed) {
       throw new Error('Машина не может ехать так быстро');
     }
+
     if (!this.isStarted) {
       throw new Error('Машина должна быть заведена, чтобы ехать');
     }
+
     if (speed * hours * this.fuelConsumption > this.currentFuelVolume) {
       throw new Error('Топливо закончится раньше достижения пункта назначения');
     }
+
     return true;
   }
 }
