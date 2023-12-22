@@ -9,13 +9,16 @@ function makeObjectDeepCopy(object) {
   if (typeof object !== 'object') {
     return object;
   }
+
   if (getType(object) === 'object') {
     for (const key in object) {
       makeObjectDeepCopy({ ...object[key] });
     }
   }
+
   if (getType(object) === 'array') {
     return [...object].map(makeObjectDeepCopy);
   }
+
   return object;
 }
