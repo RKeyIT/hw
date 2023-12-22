@@ -63,6 +63,10 @@ class Stack {
   }
 
   static fromIterable(iterable) {
+    if (iterable.length === undefined) {
+      throw new Error('Полученая сущность не является итерируемой');
+    }
+
     const instance = new Stack(iterable.length);
 
     iterable.forEach((el) => instance.push(el));
