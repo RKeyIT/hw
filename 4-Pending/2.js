@@ -37,7 +37,7 @@ P.s. Infinity, -Infinity и NaN - это невалидные числа (дел
 
 class Calculator {
   constructor(x, y) {
-    if (!x || !y || !Number.isSafeInteger(x) || !Number.isSafeInteger(y)) {
+    if (!(Calculator.isValidNumber(x) && Calculator.isValidNumber(y))) {
       throw new Error('Одно или два числа не получены или невалидны!');
     }
 
@@ -45,8 +45,12 @@ class Calculator {
     Calculator.y = y;
   }
 
+  static isValidNumber(num) {
+    return typeof num === 'number' && !isNaN(num) && isFinite(num);
+  }
+
   setX(x) {
-    if (typeof x === 'number' && !isNaN(x) && isFinite(x)) {
+    if (Calculator.isValidNumber(x)) {
       return (Calculator.x = x);
     }
 
@@ -54,7 +58,7 @@ class Calculator {
   }
 
   setY(y) {
-    if (typeof y === 'number' && !isNaN(y) && isFinite(y)) {
+    if (Calculator.isValidNumber(y)) {
       return (Calculator.y = y);
     }
 
@@ -64,16 +68,20 @@ class Calculator {
   logSum() {
     console.log(Calculator.x + Calculator.y);
   }
+
   logMul() {
     console.log(Calculator.x * Calculator.y);
   }
+
   logSub() {
     console.log(Calculator.x - Calculator.y);
   }
+
   logDiv() {
     if (Calculator.y === 0) {
       throw new Error('На ноль делить нельзя!');
     }
+
     console.log(Calculator.x / Calculator.y);
   }
 }
