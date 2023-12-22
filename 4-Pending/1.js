@@ -33,9 +33,11 @@ function concatStrings(string, separator) {
     if (typeof anotherString !== 'string') {
       return string;
     }
+
     if (typeof separator !== 'string') {
       return concatStrings(string + anotherString);
     }
+
     return concatStrings(string + separator + anotherString, separator);
   }
 
