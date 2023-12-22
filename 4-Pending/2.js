@@ -86,6 +86,7 @@ class Calculator {
   }
 }
 
+// Another calculator can broke this logic. It can be fixed by Singleton pattern
 // const anotherCalculator = new Calculator(10, 1);
 // anotherCalculator.logSum(); // 11
 
