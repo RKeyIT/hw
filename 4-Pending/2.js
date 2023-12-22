@@ -37,8 +37,8 @@ P.s. Infinity, -Infinity и NaN - это невалидные числа (дел
 
 class Calculator {
   constructor(x, y) {
-    if (!x || !y) {
-      throw new Error('Одно или два числа невалидны!');
+    if (!x || !y || !Number.isSafeInteger(x) || !Number.isSafeInteger(y)) {
+      throw new Error('Одно или два числа не получены или невалидны!');
     }
 
     Calculator.x = x;
@@ -78,6 +78,9 @@ class Calculator {
   }
 }
 
+// const anotherCalculator = new Calculator(10, 1);
+// anotherCalculator.logSum(); // 11
+
 const calculator = new Calculator(12, 3);
 calculator.logSum(); // 15
 calculator.logDiv(); // 4
@@ -85,4 +88,4 @@ calculator.setX(15);
 calculator.logDiv(); // 5
 const logCalculatorDiv = calculator.logDiv;
 logCalculatorDiv(); // 5
-calculator.setY(444n); // Ошибка!
+// calculator.setY(444n); // Ошибка!
