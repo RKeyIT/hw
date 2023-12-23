@@ -1,0 +1,39 @@
+html,
+body {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.calculator {
+    height: 400px;
+    width: 250px;
+    background-color: darkslategrey;
+    border-radius: 1em;
+    padding: 1em;
+}
+
+.result-window {
+    font-size: 2em;
+    font-weight: bold;
+    height: 2em;
+    display: flex;
+    padding: 0 .5em;
+    align-items: center;
+    justify-content: flex-end;
+    background-color: aquamarine;
+}
+
+.buttons {
+    display: flex;
+    flex-grow: 1;
+    background-color: black;
+}
