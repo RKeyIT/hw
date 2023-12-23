@@ -41,58 +41,58 @@ class Calculator {
       throw new Error('Одно или два числа не получены или невалидны!');
     }
 
-    Calculator.x = x;
-    Calculator.y = y;
+    this.x = x;
+    this.y = y;
   }
 
   static isValidNumber(num) {
     return typeof num === 'number' && !isNaN(num) && isFinite(num);
   }
 
-  setX(x) {
+  setX = (x) => {
     if (Calculator.isValidNumber(x)) {
-      return (Calculator.x = x);
+      return (this.x = x);
     }
 
     throw new Error('Переданное число невалидно!');
-  }
+  };
 
-  setY(y) {
+  setY = (y) => {
     if (Calculator.isValidNumber(y)) {
-      return (Calculator.y = y);
+      return (this.y = y);
     }
 
     throw new Error('Переданное число невалидно!');
-  }
+  };
 
-  logSum() {
-    console.log(Calculator.x + Calculator.y);
-  }
+  logSum = () => {
+    console.log(this.x + this.y);
+  };
 
-  logMul() {
-    console.log(Calculator.x * Calculator.y);
-  }
+  logMul = () => {
+    console.log(this.x * this.y);
+  };
 
-  logSub() {
-    console.log(Calculator.x - Calculator.y);
-  }
+  logSub = () => {
+    console.log(this.x - this.y);
+  };
 
-  logDiv() {
-    if (Calculator.y === 0) {
+  logDiv = () => {
+    if (this.y === 0) {
       throw new Error('На ноль делить нельзя!');
     }
 
-    console.log(Calculator.x / Calculator.y);
-  }
+    console.log(this.x / this.y);
+  };
 }
 
-// Another calculator can broke this logic. It can be fixed by Singleton pattern
-// const anotherCalculator = new Calculator(10, 1);
-// anotherCalculator.logSum(); // 11
-
 const calculator = new Calculator(12, 3);
+const anotherCalculator = new Calculator(10, 1);
+
+anotherCalculator.logSum(); // 11
 calculator.logSum(); // 15
 calculator.logDiv(); // 4
+anotherCalculator.logSum(); // 11
 calculator.setX(15);
 calculator.logDiv(); // 5
 const logCalculatorDiv = calculator.logDiv;
