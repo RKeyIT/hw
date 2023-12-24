@@ -3,6 +3,7 @@ body {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
+    font-family: sans-serif;
 }
 
 .container {
@@ -14,7 +15,7 @@ body {
 }
 
 .calculator {
-    height: 400px;
+    height: 350px;
     width: 250px;
     background-color: darkslategrey;
     border-radius: 1em;
@@ -33,16 +34,26 @@ body {
     align-items: center;
     justify-content: flex-end;
     background-color: aquamarine;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .buttons {
     display: grid;
     height: 100%;
-    background-color: gainsboro;
+    gap: 0.1em;
+    grid-template-columns: repeat(5, 1fr);
     grid-template-areas:
         "d7 d8 d9 invert delete"
         "d4 d5 d6 multiply divide"
         "d1 d2 d3 minus equal"
         "reset d0 dot plus equal"
     ;
+}
+
+.btn {
+    font-size: 1.5em;
+    font-weight: bold;
+    min-width: 100%;
 }

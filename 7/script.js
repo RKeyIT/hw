@@ -1,6 +1,11 @@
 class Calculator {
   constructor() {
-    (this.a = 0), (this.b = 0), (this.sign = '+');
+    this.a = 0;
+    this.b = null;
+    this.sign = null;
+    this.prevResult = null;
+    this.isFraction = false;
+    this.isCurrentNegative = false;
   }
 
   calculate() {
@@ -21,7 +26,7 @@ class Calculator {
 
       case '/':
         if (this.b === 0) {
-          return "Error: Can't divide to zero!";
+          throw new Error("Error: Can't divide to zero!");
         }
         result = this.a / this.b;
         break;
@@ -30,20 +35,29 @@ class Calculator {
         throw new Error("Can't calculate due to wrong sign or number!");
     }
 
+    this.b = 0;
+
     if (Number.isSafeInteger(result)) {
-      return result;
+      this.a = result;
+      return this.a;
     } else {
-      return result.toFixed(8);
+      this.a = result.toFixed(8);
+      return this.a;
     }
   }
 }
 
 const calculator = new Calculator();
 
+const result = document.getElementById('result');
+result.innerText = calculator.a || 0;
+
 const UIDigits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(createButton);
 const UIOps = ['+', '-', '*', '/', '+/-', '->', 'C', '.', '='].map(
   createButton
 );
+
+const buttonsContainer = document.getElementById('buttons');
 
 function createButton(el) {
   const btn = document.createElement('button');
@@ -53,15 +67,142 @@ function createButton(el) {
   btn.type = 'button';
 
   if (typeof el === 'number') {
+    btn.addEventListener('click', () => digitListener(el));
     btn.style = `grid-area: d${el}`;
   } else {
-    btn.style = `grid-area: ${applyGridAreaToSign(el)}`;
+    btn.addEventListener('click', () => signListener(el));
+    btn.style = `grid-area: ${generateGridArea(el)}`;
   }
 
   return btn;
 }
 
-function applyGridAreaToSign(el) {
+function refreshResult() {
+  if (calculator.sign) {
+    const value = `${calculator.a} ${calculator.sign} ${calculator.b}`;
+    result.innerText = value;
+  } else {
+    const value = calculator.a || calculator.prevResult || 0;
+    result.innerText = `${value} ${calculator.sign}`;
+  }
+}
+
+function digitListener(el) {
+  if (!calculator.sign) {
+    if (`${calculator.a}`.length >= 10) {
+      return;
+    }
+
+    if (calculator.isCurrentNegative) {
+      calculator.a = +`-${calculator.a}${el}` || -el;
+      calculator.isCurrentNegative = false;
+    } else {
+      calculator.a = +`${calculator.a}${el}` || el;
+    }
+
+    refreshResult();
+  } else {
+    if (`${calculator.b}`.length >= 10) {
+      return;
+    }
+
+    if (calculator.isCurrentNegative) {
+      calculator.b = +`-${calculator.b}${el}` || -el;
+      calculator.isCurrentNegative = false;
+    } else {
+      calculator.b = +`${calculator.b}${el}` || el;
+    }
+
+    refreshResult();
+  }
+}
+
+function signListener(el) {
+  switch (el) {
+    case '+':
+    case '*':
+    case '/':
+      calculator.sign = el;
+      refreshResult();
+      break;
+
+    case '-':
+      if (!calculator.a) {
+        if (calculator.prevResult) {
+          calculator.a = calculator.prevResult;
+          calculator.sign = el;
+        } else {
+          calculator.isCurrentNegative = true;
+        }
+      } else if (!calculator.sign) {
+        calculator.sign = el;
+      } else {
+        calculator.isCurrentNegative = true;
+      }
+      refreshResult();
+      break;
+
+    case '+/-':
+      if (calculator.b) {
+        calculator.b = -calculator.b;
+      } else {
+        calculator.a = -calculator.a;
+      }
+      refreshResult();
+      break;
+
+    case '->':
+      if (calculator.b) {
+        calculator.b = deleteOneDigit(calculator.b);
+      } else {
+        calculator.a = deleteOneDigit(calculator.a);
+      }
+
+      refreshResult();
+      break;
+
+    case 'C':
+      resetCalculatorState();
+      break;
+
+    case '.':
+      if (!calculator.isFraction) {
+        calculator.isFraction = true;
+      }
+      break;
+
+    case '=':
+      if (!calculator.sign || !calculator.b) {
+        return;
+      }
+      resetCalculatorState(calculator.calculate());
+      break;
+
+    default:
+      throw new Error('signListener error: something went wrong');
+  }
+}
+
+function resetCalculatorState(a) {
+  calculator.prevResult = a || null;
+
+  calculator.a = null;
+  calculator.b = null;
+  calculator.sign = null;
+  calculator.isFraction = false;
+  calculator.isCurrentNegative = false;
+  refreshResult();
+}
+
+function deleteOneDigit(number) {
+  let preResetNumLength = `${number}`[0] === '-' ? 2 : 1;
+
+  return `${number}`.length > preResetNumLength
+    ? +`${number}`.replace(/(.+).+\b/, '$1')
+    : 0;
+}
+
+function generateGridArea(el) {
   switch (el) {
     case '+':
       return 'plus';
@@ -86,17 +227,13 @@ function applyGridAreaToSign(el) {
   }
 }
 
-console.log(UIDigits);
-console.log(UIOps);
-
-const btnUI = document.getElementById('buttons');
-
 function renderButtons() {
   for (let i = 0; i < UIDigits.length; i++) {
-    btnUI.appendChild(UIDigits[i]);
+    buttonsContainer.appendChild(UIDigits[i]);
   }
   for (let i = 0; i < UIOps.length; i++) {
-    btnUI.appendChild(UIOps[i]);
+    buttonsContainer.appendChild(UIOps[i]);
   }
 }
+
 renderButtons();
