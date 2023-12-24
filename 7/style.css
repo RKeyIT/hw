@@ -19,9 +19,12 @@ body {
     background-color: darkslategrey;
     border-radius: 1em;
     padding: 1em;
+    display: flex;
+    flex-direction: column;
+    gap: 1em
 }
 
-.result-window {
+.result {
     font-size: 2em;
     font-weight: bold;
     height: 2em;
@@ -33,7 +36,13 @@ body {
 }
 
 .buttons {
-    display: flex;
-    flex-grow: 1;
-    background-color: black;
+    display: grid;
+    height: 100%;
+    background-color: gainsboro;
+    grid-template-areas:
+        "d7 d8 d9 invert delete"
+        "d4 d5 d6 multiply divide"
+        "d1 d2 d3 minus equal"
+        "reset d0 dot plus equal"
+    ;
 }
