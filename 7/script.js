@@ -3,6 +3,7 @@ class Calculator {
     this.a = 0;
     this.b = null;
     this.sign = null;
+    this.fraction = null;
     this.prevResult = null;
     this.isFraction = false;
     this.isCurrentNegative = false;
@@ -86,17 +87,35 @@ function createButton(el) {
 }
 
 function refreshResult() {
-  if (calculator.sign) {
-    const value = `${calculator.a} ${calculator.sign} ${calculator.b}`;
-    result.innerText = value;
+  if (calculator.sign !== null) {
+    if (calculator.isFraction) {
+      const value = `${calculator.a} ${calculator.sign} ${calculator.b}.${calculator.fraction}`;
+      result.innerText = value;
+    } else {
+      const value = `${calculator.a} ${calculator.sign} ${calculator.b}`;
+      result.innerText = value;
+    }
   } else {
-    const value = calculator.a || calculator.prevResult || 0;
-    result.innerText = `${value} ${calculator.sign} ${calculator.b}`;
+    if (calculator.isFraction) {
+      const value = calculator.a || calculator.prevResult || 0;
+      result.innerText = `${value}.${calculator.fraction} ${calculator.sign} ${calculator.b}`;
+    } else {
+      const value = calculator.a || calculator.prevResult || 0;
+      result.innerText = `${value} ${calculator.sign} ${calculator.b}`;
+    }
   }
 }
 
 function digitListener(el) {
-  if (!calculator.sign) {
+  if (calculator.isFraction) {
+    if (calculator.fraction === null) {
+      calculator.fraction = el;
+    } else if (`${calculator.fraction}`.length > 8) {
+      return;
+    } else {
+      calculator.fraction = +`${calculator.fraction}${el}`;
+    }
+  } else if (!calculator.sign) {
     if (`${calculator.a}`.length >= 10) {
       return;
     }
@@ -107,8 +126,6 @@ function digitListener(el) {
     } else {
       calculator.a = +`${calculator.a}${el}` || el;
     }
-
-    refreshResult();
   } else {
     if (`${calculator.b}`.length >= 10) {
       return;
@@ -120,21 +137,27 @@ function digitListener(el) {
     } else {
       calculator.b = +`${calculator.b}${el}` || el;
     }
-
-    refreshResult();
   }
+  refreshResult();
 }
 
 function signListener(el) {
+  if (calculator.isFraction) {
+    calculator.isFraction = false;
+  }
+
   switch (el) {
     case '+':
     case '*':
     case '/':
       if (calculator.b !== null) {
+        calculator.b += +`0.${calculator.fraction}`;
         resetCalculatorState(calculator.calculate());
         calculator.a = calculator.prevResult;
         calculator.sign = el;
         break;
+      } else {
+        calculator.a += +`0.${calculator.fraction}`;
       }
       if (calculator.prevResult) {
         calculator.a = calculator.prevResult;
@@ -209,6 +232,7 @@ function resetCalculatorState(a) {
   calculator.a = null;
   calculator.b = null;
   calculator.sign = null;
+  calculator.fraction = null;
   calculator.isFraction = false;
   calculator.isCurrentNegative = false;
   refreshResult();
