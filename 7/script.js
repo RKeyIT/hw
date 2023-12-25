@@ -56,28 +56,22 @@ class Calculator {
     this.fraction = null;
     this.isFraction = false;
     this.isCurrentNegative = false;
-    refreshResult();
+    this.refreshResult();
   }
 
   refreshResult() {
     let result;
 
     if (this.isSign()) {
-      if (this.isFraction) {
-        result = `${this.sign} ${this.b}.${this.fraction}`;
-      } else {
-        if (this.b !== null) {
-          result = `${this.sign} ${this.b}`;
-        } else {
-          result = `${this.sign}`;
-        }
-      }
+      result = this.isFraction
+        ? `${this.sign} ${this.b}.${this.fraction}`
+        : this.isB()
+        ? `${this.sign} ${this.b}`
+        : `${this.sign}`;
     } else {
-      if (this.isFraction) {
-        result = `${this.a || this.prevResult || 0}.${this.fraction}`;
-      } else {
-        result = `${this.a || this.prevResult || 0}`;
-      }
+      result = this.isFraction
+        ? `${this.a || this.prevResult || 0}.${this.fraction}`
+        : `${this.a || this.prevResult || 0}`;
     }
 
     currentValue.innerText = result;
