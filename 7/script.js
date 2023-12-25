@@ -1,12 +1,12 @@
 class Calculator {
   constructor() {
-    this.a = 0;
+    this.a = null;
     this.b = null;
     this.sign = null;
     this.fraction = null;
-    this.prevResult = null;
     this.isFraction = false;
     this.isCurrentNegative = false;
+    this.prevResult = 0;
 
     this.operations = {
       '+': () => +(this.a + this.b),
@@ -20,9 +20,9 @@ class Calculator {
     console.log(this.operations[this.sign]());
     if (this.sign === '/' && this.b === 0) {
       // FIXME - Error text is connect to next calculated value
-      return resetCalculatorState('Error!');
+      return calculator.resetState('Error!');
     }
-    return resetCalculatorState(
+    return calculator.resetState(
       this.resultToFixed(this.operations[this.sign]())
     );
   }
@@ -34,6 +34,18 @@ class Calculator {
 
     const isNeedToCut = `${result}`.length - `${result}`.includes('.') > 8;
     return isNeedToCut ? result.toFixed(8) : result;
+  }
+
+  resetState(toPrevResult) {
+    this.prevResult = toPrevResult !== undefined ? toPrevResult : 0;
+
+    this.a = null;
+    this.b = null;
+    this.sign = null;
+    this.fraction = null;
+    this.isFraction = false;
+    this.isCurrentNegative = false;
+    refreshResult();
   }
 }
 
@@ -155,7 +167,7 @@ function signListener(el) {
         if (calculator.isFraction) {
           calculator.b += +`0.${calculator.fraction}`;
         }
-        resetCalculatorState(calculator.calculate());
+        calculator.resetState(calculator.calculate());
         calculator.a = calculator.prevResult;
         calculator.sign = el;
         break;
@@ -172,7 +184,7 @@ function signListener(el) {
 
     case '-':
       if (calculator.b !== null) {
-        resetCalculatorState(calculator.calculate());
+        calculator.resetState(calculator.calculate());
         calculator.a = calculator.prevResult;
         calculator.sign = el;
         break;
@@ -218,7 +230,7 @@ function signListener(el) {
       break;
 
     case 'C':
-      resetCalculatorState();
+      calculator.resetState();
       break;
 
     case '.':
@@ -234,18 +246,6 @@ function signListener(el) {
     default:
       throw new Error('signListener error: something went wrong');
   }
-  refreshResult();
-}
-
-function resetCalculatorState(toPrevResult) {
-  calculator.prevResult = toPrevResult !== undefined ? toPrevResult : null;
-
-  calculator.a = null;
-  calculator.b = null;
-  calculator.sign = null;
-  calculator.fraction = null;
-  calculator.isFraction = false;
-  calculator.isCurrentNegative = false;
   refreshResult();
 }
 
