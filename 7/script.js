@@ -108,6 +108,9 @@ function refreshResult() {
 
 function digitListener(el) {
   if (calculator.isFraction) {
+    if (calculator.sign !== null && calculator.b === null) {
+      calculator.b = 0;
+    }
     if (calculator.fraction === null) {
       calculator.fraction = el;
     } else if (`${calculator.fraction}`.length > 8) {
@@ -143,6 +146,12 @@ function digitListener(el) {
 
 function signListener(el) {
   if (calculator.isFraction) {
+    if (calculator.b !== null) {
+      calculator.b = calculator.b + +`0.${calculator.fraction}`;
+    } else {
+      calculator.a = calculator.a + +`0.${calculator.fraction}`;
+    }
+
     calculator.isFraction = false;
   }
 
@@ -151,13 +160,17 @@ function signListener(el) {
     case '*':
     case '/':
       if (calculator.b !== null) {
-        calculator.b += +`0.${calculator.fraction}`;
+        if (calculator.isFraction) {
+          calculator.b += +`0.${calculator.fraction}`;
+        }
         resetCalculatorState(calculator.calculate());
         calculator.a = calculator.prevResult;
         calculator.sign = el;
         break;
       } else {
-        calculator.a += +`0.${calculator.fraction}`;
+        if (calculator.isFraction) {
+          calculator.a += +`0.${calculator.fraction}`;
+        }
       }
       if (calculator.prevResult) {
         calculator.a = calculator.prevResult;
@@ -204,8 +217,10 @@ function signListener(el) {
     case '->':
       if (calculator.b !== null) {
         calculator.b = deleteOneDigit(calculator.b);
-      } else {
+      } else if (calculator.a !== null) {
         calculator.a = deleteOneDigit(calculator.a);
+      } else {
+        calculator.a = deleteOneDigit(calculator.prevResult);
       }
 
       break;
@@ -217,6 +232,10 @@ function signListener(el) {
     case '.':
       if (!calculator.isFraction) {
         calculator.isFraction = true;
+      }
+
+      if (calculator.sign !== null && calculator.b === null) {
+        calculator.b = 0;
       }
       break;
 
