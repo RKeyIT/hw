@@ -3,6 +3,7 @@ class Calculator {
     this.a = null;
     this.b = null;
     this.sign = null;
+    this.error = null;
     this.fraction = null;
     this.isFraction = false;
     this.isCurrentNegative = false;
@@ -30,12 +31,9 @@ class Calculator {
 
   calculate() {
     if (this.sign === '/' && this.b === 0) {
-      // FIXME - Error text is connect to next calculated value
-      return calculator.resetState('Error!');
+      return this.resetState(0, 'Error!');
     }
-    return calculator.resetState(
-      this.resultToFixed(this.operations[this.sign]())
-    );
+    return this.resetState(this.resultToFixed(this.operations[this.sign]()));
   }
 
   resultToFixed(result) {
@@ -47,12 +45,14 @@ class Calculator {
     return isNeedToCut ? result.toFixed(8) : result;
   }
 
-  resetState(toPrevResult) {
-    this.prevResult = toPrevResult !== undefined ? toPrevResult : 0;
+  resetState(toPrevResult, error) {
+    this.prevResult = toPrevResult || 0;
+    console.log(this.prevResult);
 
     this.a = null;
     this.b = null;
     this.sign = null;
+    this.error = error || null;
     this.fraction = null;
     this.isFraction = false;
     this.isCurrentNegative = false;
@@ -75,7 +75,7 @@ class Calculator {
     }
 
     currentValue.innerText = result;
-    previousValue.innerText = this.prevResult;
+    previousValue.innerText = this.error || this.prevResult;
   }
 }
 
