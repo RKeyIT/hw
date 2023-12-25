@@ -41,7 +41,14 @@ class Calculator {
       this.a = result;
       return this.a;
     } else {
-      this.a = result.toFixed(8);
+      let dotIndex = `${result}`.includes('.');
+
+      if (`${result}`.length - dotIndex > 8) {
+        this.a = result.toPrecision(9);
+      } else {
+        this.a = result;
+      }
+
       return this.a;
     }
   }
