@@ -14,25 +14,19 @@ function getType(el) {
 }
 
 function makeObjectDeepCopy(object) {
-  if (typeof object !== 'object') {
-    return object;
+  if (getType(object) === 'array') {
+    return object.map((el) => makeObjectDeepCopy(el));
   }
-  let copy;
 
   if (getType(object) === 'object') {
-    copy = {};
+    const copy = {};
     for (const key in object) {
       copy[key] = makeObjectDeepCopy(object[key]);
     }
     return copy;
   }
 
-  if (getType(object) === 'array') {
-    copy = object.map((el) => makeObjectDeepCopy(el));
-    return copy;
-  }
-
-  return copy;
+  return object;
 }
 
 const obj1 = {
