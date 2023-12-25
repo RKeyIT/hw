@@ -83,7 +83,7 @@ function refreshResult() {
     result.innerText = value;
   } else {
     const value = calculator.a || calculator.prevResult || 0;
-    result.innerText = `${value} ${calculator.sign}`;
+    result.innerText = `${value} ${calculator.sign} ${calculator.b}`;
   }
 }
 
