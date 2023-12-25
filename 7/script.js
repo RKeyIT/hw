@@ -16,8 +16,19 @@ class Calculator {
     };
   }
 
+  isA() {
+    return this.a !== null;
+  }
+
+  isB() {
+    return this.b !== null;
+  }
+
+  isSign() {
+    return this.sign !== null;
+  }
+
   calculate() {
-    console.log(this.operations[this.sign]());
     if (this.sign === '/' && this.b === 0) {
       // FIXME - Error text is connect to next calculated value
       return calculator.resetState('Error!');
@@ -46,6 +57,31 @@ class Calculator {
     this.isFraction = false;
     this.isCurrentNegative = false;
     refreshResult();
+  }
+
+  refreshResult() {
+    let result;
+
+    if (this.isSign()) {
+      if (this.isFraction) {
+        result = `${this.sign} ${this.b}.${this.fraction}`;
+      } else {
+        if (this.b !== null) {
+          result = `${this.sign} ${this.b}`;
+        } else {
+          result = `${this.sign}`;
+        }
+      }
+    } else {
+      if (this.isFraction) {
+        result = `${this.a || this.prevResult || 0}.${this.fraction}`;
+      } else {
+        result = `${this.a || this.prevResult || 0}`;
+      }
+    }
+
+    currentValue.innerText = result;
+    previousValue.innerText = this.prevResult;
   }
 }
 
@@ -83,33 +119,6 @@ function createButton(el) {
   return btn;
 }
 
-function refreshResult() {
-  if (calculator.sign !== null) {
-    if (calculator.isFraction) {
-      const value = `${calculator.sign} ${calculator.b}.${calculator.fraction}`;
-      currentValue.innerText = value;
-    } else {
-      if (calculator.b !== null) {
-        const value = `${calculator.sign} ${calculator.b}`;
-        currentValue.innerText = value;
-      } else {
-        const value = `${calculator.sign}`;
-        currentValue.innerText = value;
-      }
-    }
-  } else {
-    if (calculator.isFraction) {
-      const value = calculator.a || calculator.prevResult || 0;
-      currentValue.innerText = `${value}.${calculator.fraction}`;
-    } else {
-      const value = calculator.a || calculator.prevResult || 0;
-      currentValue.innerText = `${value}`;
-    }
-  }
-
-  previousValue.innerText = calculator.prevResult;
-}
-
 function digitListener(el) {
   if (calculator.isFraction) {
     if (calculator.sign !== null && calculator.b === null) {
@@ -145,7 +154,7 @@ function digitListener(el) {
       calculator.b = +`${calculator.b}${el}` || el;
     }
   }
-  refreshResult();
+  calculator.refreshResult();
 }
 
 function signListener(el) {
@@ -220,11 +229,11 @@ function signListener(el) {
 
     case '->':
       if (calculator.b !== null) {
-        calculator.b = deleteOneDigit(calculator.b);
+        calculator.b = calculator.deleteOneDigit(calculator.b);
       } else if (calculator.a !== null) {
-        calculator.a = deleteOneDigit(calculator.a);
+        calculator.a = calculator.deleteOneDigit(calculator.a);
       } else {
-        calculator.a = deleteOneDigit(calculator.prevResult);
+        calculator.a = calculator.deleteOneDigit(calculator.prevResult);
       }
 
       break;
@@ -246,15 +255,7 @@ function signListener(el) {
     default:
       throw new Error('signListener error: something went wrong');
   }
-  refreshResult();
-}
-
-function deleteOneDigit(number) {
-  let preResetNumLength = `${number}`[0] === '-' ? 2 : 1;
-
-  return `${number}`.length > preResetNumLength
-    ? +`${number}`.replace(/(.+).+\b/, '$1')
-    : 0;
+  calculator.refreshResult();
 }
 
 function generateSignName(el) {
