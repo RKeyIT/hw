@@ -122,6 +122,9 @@ function signListener(el) {
     case '+':
     case '*':
     case '/':
+      if (calculator.prevResult) {
+        calculator.a = calculator.prevResult;
+      }
       calculator.sign = el;
       refreshResult();
       break;
