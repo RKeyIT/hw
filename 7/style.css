@@ -44,8 +44,9 @@ body {
 }
 
 .result {
+    position: relative;
     font-size: 1.75em;
-    line-height: .8em;
+    line-height: 1em;
     box-sizing: border-box;
     border: 2px inset var(--black);
     font-weight: bold;
@@ -59,6 +60,18 @@ body {
     -moz-user-select: none;
     -webkit-user-select: none;
     user-select: none;
+}
+
+.currentValue {
+    font-size: 1em;
+}
+
+.previousValue {
+    position: absolute;
+    font-size: 0.6em;
+    color: var(--gray-mid);
+    left: 0.6em;
+    top: 0;
 }
 
 .buttons {

@@ -45,7 +45,7 @@ class Calculator {
       let dotIndex = `${result}`.includes('.');
 
       if (`${result}`.length - dotIndex > 8) {
-        this.a = result.toPrecision(9);
+        this.a = result.toFixed(8);
       } else {
         this.a = result;
       }
@@ -57,8 +57,10 @@ class Calculator {
 
 const calculator = new Calculator();
 
-const result = document.getElementById('result');
-result.innerText = calculator.a || 0;
+const currentValue = document.getElementById('currentValue');
+currentValue.innerText = calculator.a || 0;
+
+const previousValue = document.getElementById('previousValue');
 
 const UIDigits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(createButton);
 const UIOps = ['+', '-', '*', '/', '+/-', '->', 'C', '.', '='].map(
@@ -78,9 +80,9 @@ function createButton(el) {
     btn.className = `btn digit ${el}`;
     btn.style = `grid-area: d${el}`;
   } else {
-    btn.className = `btn sign ${generateGridArea(el)}`;
     btn.addEventListener('click', () => signListener(el));
-    btn.style = `grid-area: ${generateGridArea(el)}`;
+    btn.className = `btn sign ${generateSignName(el)}`;
+    btn.style = `grid-area: ${generateSignName(el)}`;
   }
 
   return btn;
@@ -89,21 +91,28 @@ function createButton(el) {
 function refreshResult() {
   if (calculator.sign !== null) {
     if (calculator.isFraction) {
-      const value = `${calculator.a} ${calculator.sign} ${calculator.b}.${calculator.fraction}`;
-      result.innerText = value;
+      const value = `${calculator.sign} ${calculator.b}.${calculator.fraction}`;
+      currentValue.innerText = value;
     } else {
-      const value = `${calculator.a} ${calculator.sign} ${calculator.b}`;
-      result.innerText = value;
+      if (calculator.b !== null) {
+        const value = `${calculator.sign} ${calculator.b}`;
+        currentValue.innerText = value;
+      } else {
+        const value = `${calculator.sign}`;
+        currentValue.innerText = value;
+      }
     }
   } else {
     if (calculator.isFraction) {
       const value = calculator.a || calculator.prevResult || 0;
-      result.innerText = `${value}.${calculator.fraction} ${calculator.sign} ${calculator.b}`;
+      currentValue.innerText = `${value}.${calculator.fraction}`;
     } else {
       const value = calculator.a || calculator.prevResult || 0;
-      result.innerText = `${value} ${calculator.sign} ${calculator.b}`;
+      currentValue.innerText = `${value}`;
     }
   }
+
+  previousValue.innerText = calculator.prevResult;
 }
 
 function digitListener(el) {
@@ -265,7 +274,7 @@ function deleteOneDigit(number) {
     : 0;
 }
 
-function generateGridArea(el) {
+function generateSignName(el) {
   switch (el) {
     case '+':
       return 'plus';
