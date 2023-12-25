@@ -70,13 +70,14 @@ function createButton(el) {
   const btn = document.createElement('button');
   const text = document.createTextNode(el);
   btn.appendChild(text);
-  btn.className = `btn ${el}`;
   btn.type = 'button';
 
   if (typeof el === 'number') {
     btn.addEventListener('click', () => digitListener(el));
+    btn.className = `btn digit ${el}`;
     btn.style = `grid-area: d${el}`;
   } else {
+    btn.className = `btn sign ${generateGridArea(el)}`;
     btn.addEventListener('click', () => signListener(el));
     btn.style = `grid-area: ${generateGridArea(el)}`;
   }
