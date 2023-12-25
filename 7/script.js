@@ -130,46 +130,61 @@ function signListener(el) {
     case '+':
     case '*':
     case '/':
+      if (calculator.b !== null) {
+        resetCalculatorState(calculator.calculate());
+        calculator.a = calculator.prevResult;
+        calculator.sign = el;
+        break;
+      }
       if (calculator.prevResult) {
         calculator.a = calculator.prevResult;
       }
       calculator.sign = el;
-      refreshResult();
       break;
 
     case '-':
-      if (!calculator.a) {
+      if (calculator.b !== null) {
+        resetCalculatorState(calculator.calculate());
+        calculator.a = calculator.prevResult;
+        calculator.sign = el;
+        break;
+      }
+      if (calculator.a === null) {
         if (calculator.prevResult) {
           calculator.a = calculator.prevResult;
           calculator.sign = el;
         } else {
           calculator.isCurrentNegative = true;
         }
-      } else if (!calculator.sign) {
+      } else if (calculator.sign === null) {
         calculator.sign = el;
       } else {
         calculator.isCurrentNegative = true;
       }
-      refreshResult();
+      break;
+
+    case '=':
+      if (calculator.sign === null || calculator.b === null) {
+        return;
+      }
+      resetCalculatorState(calculator.calculate());
       break;
 
     case '+/-':
-      if (calculator.b) {
+      if (calculator.b !== null) {
         calculator.b = -calculator.b;
       } else {
         calculator.a = -calculator.a;
       }
-      refreshResult();
       break;
 
     case '->':
-      if (calculator.b) {
+      if (calculator.b !== null) {
         calculator.b = deleteOneDigit(calculator.b);
       } else {
         calculator.a = deleteOneDigit(calculator.a);
       }
 
-      refreshResult();
       break;
 
     case 'C':
@@ -182,16 +197,10 @@ function signListener(el) {
       }
       break;
 
-    case '=':
-      if (!calculator.sign || !calculator.b) {
-        return;
-      }
-      resetCalculatorState(calculator.calculate());
-      break;
-
     default:
       throw new Error('signListener error: something went wrong');
   }
+  refreshResult();
 }
 
 function resetCalculatorState(a) {
