@@ -7,51 +7,33 @@ class Calculator {
     this.prevResult = null;
     this.isFraction = false;
     this.isCurrentNegative = false;
+
+    this.operations = {
+      '+': () => +(this.a + this.b),
+      '-': () => this.a - this.b,
+      '*': () => this.a * this.b,
+      '/': () => this.a / this.b,
+    };
   }
 
   calculate() {
-    let result;
-
-    switch (this.sign) {
-      case '+':
-        result = this.a + this.b;
-        break;
-
-      case '-':
-        result = this.a - this.b;
-        break;
-
-      case '*':
-        result = this.a * this.b;
-        break;
-
-      case '/':
-        if (this.b === 0) {
-          throw new Error("Error: Can't divide to zero!");
-        }
-        result = this.a / this.b;
-        break;
-
-      default:
-        throw new Error("Can't calculate due to wrong sign or number!");
+    console.log(this.operations[this.sign]());
+    if (this.sign === '/' && this.b === 0) {
+      // FIXME - Error text is connect to next calculated value
+      return resetCalculatorState('Error!');
     }
+    return resetCalculatorState(
+      this.resultToFixed(this.operations[this.sign]())
+    );
+  }
 
-    this.b = 0;
-
+  resultToFixed(result) {
     if (Number.isSafeInteger(result)) {
-      this.a = result;
-      return this.a;
-    } else {
-      let dotIndex = `${result}`.includes('.');
-
-      if (`${result}`.length - dotIndex > 8) {
-        this.a = result.toFixed(8);
-      } else {
-        this.a = result;
-      }
-
-      return this.a;
+      return (this.prevResult = result);
     }
+
+    const isNeedToCut = `${result}`.length - `${result}`.includes('.') > 8;
+    return isNeedToCut ? result.toFixed(8) : result;
   }
 }
 
@@ -61,6 +43,7 @@ const currentValue = document.getElementById('currentValue');
 currentValue.innerText = calculator.a || 0;
 
 const previousValue = document.getElementById('previousValue');
+previousValue.innerText = calculator.prevResult || 0;
 
 const UIDigits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(createButton);
 const UIOps = ['+', '-', '*', '/', '+/-', '->', 'C', '.', '='].map(
@@ -212,7 +195,7 @@ function signListener(el) {
       if (calculator.sign === null || calculator.b === null) {
         return;
       }
-      resetCalculatorState(calculator.calculate());
+      calculator.calculate();
       break;
 
     case '+/-':
@@ -254,8 +237,8 @@ function signListener(el) {
   refreshResult();
 }
 
-function resetCalculatorState(a) {
-  calculator.prevResult = a || null;
+function resetCalculatorState(toPrevResult) {
+  calculator.prevResult = toPrevResult !== undefined ? toPrevResult : null;
 
   calculator.a = null;
   calculator.b = null;
