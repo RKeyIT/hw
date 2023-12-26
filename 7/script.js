@@ -71,7 +71,15 @@ class Calculator {
     previousValue.innerText = this.error || this.prevResult;
   };
 
-  digitListener(el) {
+  deleteOneDigit(number) {
+    let preResetNumLength = `${number}`[0] === '-' ? 2 : 1;
+
+    return `${number}`.length > preResetNumLength
+      ? +`${number}`.replace(/(.+).+\b/, '$1')
+      : 0;
+  }
+
+  digitListener = (el) => {
     const {
       isFraction,
       fraction,
@@ -90,24 +98,24 @@ class Calculator {
 
     const setFraction = () => {
       if (isSign() && !isB()) {
-        return (calculator.b = 0);
+        return (this.b = 0);
       }
       if (fraction === null) {
-        return (calculator.fraction = el);
+        return (this.fraction = el);
       }
-      if (isCorrectLength(calculator.fraction)) {
-        return (calculator.fraction = +`${calculator.fraction}${el}`);
+      if (isCorrectLength(this.fraction)) {
+        return (this.fraction = +`${this.fraction}${el}`);
       }
     };
 
     const setOperand = (operand) => {
       // operand = 'a' || 'b'
-      if (isCorrectLength(calculator[operand])) {
+      if (isCorrectLength(this[operand])) {
         if (isCurrentNegative) {
-          calculator[operand] = setNumber(calculator[operand]);
-          calculator.isCurrentNegative = false;
+          this[operand] = setNumber(this[operand]);
+          this.isCurrentNegative = false;
         } else {
-          calculator[operand] = setNumber(calculator[operand]);
+          this[operand] = setNumber(this[operand]);
         }
       }
     };
@@ -120,109 +128,109 @@ class Calculator {
       setOperand('b');
     }
 
-    calculator.refreshResult();
-  }
+    this.refreshResult();
+  };
 
-  signListener(el) {
-    if (calculator.isFraction) {
-      if (calculator.b !== null) {
-        calculator.b = calculator.b + +`0.${calculator.fraction}`;
+  signListener = (el) => {
+    if (this.isFraction) {
+      if (this.b !== null) {
+        this.b = this.b + +`0.${this.fraction}`;
       } else {
-        calculator.a = calculator.a + +`0.${calculator.fraction}`;
+        this.a = this.a + +`0.${this.fraction}`;
       }
 
-      calculator.isFraction = false;
+      this.isFraction = false;
     }
 
     switch (el) {
       case '+':
       case '*':
       case '/':
-        if (calculator.b !== null) {
-          if (calculator.isFraction) {
-            calculator.b += +`0.${calculator.fraction}`;
+        if (this.b !== null) {
+          if (this.isFraction) {
+            this.b += +`0.${this.fraction}`;
           }
-          calculator.resetState(calculator.calculate());
-          calculator.a = calculator.prevResult;
-          calculator.sign = el;
+          this.resetState(this.calculate());
+          this.a = this.prevResult;
+          this.sign = el;
           break;
         } else {
-          if (calculator.isFraction) {
-            calculator.a += +`0.${calculator.fraction}`;
+          if (this.isFraction) {
+            this.a += +`0.${this.fraction}`;
           }
         }
-        if (calculator.prevResult) {
-          calculator.a = calculator.prevResult;
+        if (this.prevResult) {
+          this.a = this.prevResult;
         }
-        calculator.sign = el;
+        this.sign = el;
         break;
 
       case '-':
-        if (calculator.b !== null) {
-          calculator.resetState(calculator.calculate());
-          calculator.a = calculator.prevResult;
-          calculator.sign = el;
+        if (this.b !== null) {
+          this.resetState(this.calculate());
+          this.a = this.prevResult;
+          this.sign = el;
           break;
         }
-        if (calculator.a === null) {
-          if (calculator.prevResult) {
-            calculator.a = calculator.prevResult;
-            calculator.sign = el;
+        if (this.a === null) {
+          if (this.prevResult) {
+            this.a = this.prevResult;
+            this.sign = el;
           } else {
-            calculator.isCurrentNegative = true;
+            this.isCurrentNegative = true;
           }
-        } else if (calculator.sign === null) {
-          calculator.sign = el;
+        } else if (this.sign === null) {
+          this.sign = el;
         } else {
-          calculator.isCurrentNegative = true;
+          this.isCurrentNegative = true;
         }
         break;
 
       case '=':
-        if (calculator.sign === null || calculator.b === null) {
+        if (this.sign === null || this.b === null) {
           return;
         }
-        calculator.calculate();
+        this.calculate();
         break;
 
       case '+/-':
-        if (calculator.b !== null) {
-          calculator.b = -calculator.b;
+        if (this.b !== null) {
+          this.b = -this.b;
         } else {
-          calculator.a = -calculator.a;
+          this.a = -this.a;
         }
         break;
 
       case '->':
-        if (calculator.b !== null) {
-          calculator.b = calculator.deleteOneDigit(calculator.b);
-        } else if (calculator.a !== null) {
-          calculator.a = calculator.deleteOneDigit(calculator.a);
+        if (this.b !== null) {
+          this.b = this.deleteOneDigit(this.b);
+        } else if (this.a !== null) {
+          this.a = this.deleteOneDigit(this.a);
         } else {
-          calculator.a = calculator.deleteOneDigit(calculator.prevResult);
+          this.a = this.deleteOneDigit(this.prevResult);
         }
 
         break;
 
       case 'C':
-        calculator.resetState();
+        this.resetState();
         break;
 
       case '.':
-        if (!calculator.isFraction) {
-          calculator.isFraction = true;
+        if (!this.isFraction) {
+          this.isFraction = true;
         }
 
-        if (calculator.sign !== null && calculator.b === null) {
-          calculator.b = 0;
+        if (this.sign !== null && this.b === null) {
+          this.b = 0;
         }
         break;
 
       default:
         throw new Error('signListener error: something went wrong');
     }
-    calculator.refreshResult();
-  }
+    this.refreshResult();
+  };
 
   // End of Calculator class
 }
