@@ -113,13 +113,13 @@ function digitListener(el) {
     }
     if (calculator.fraction === null) {
       calculator.fraction = el;
-    } else if (`${calculator.fraction}`.length > 8) {
+    } else if (`${calculator.fraction}`.length > calculator.maxInputLength) {
       return;
     } else {
       calculator.fraction = +`${calculator.fraction}${el}`;
     }
   } else if (!calculator.sign) {
-    if (`${calculator.a}`.length >= 10) {
+    if (`${calculator.a}`.length > calculator.maxInputLength) {
       return;
     }
 
@@ -130,7 +130,7 @@ function digitListener(el) {
       calculator.a = +`${calculator.a}${el}` || el;
     }
   } else {
-    if (`${calculator.b}`.length >= 10) {
+    if (`${calculator.b}`.length > calculator.maxInputLength) {
       return;
     }
 
