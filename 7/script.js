@@ -107,40 +107,54 @@ function createButton(el) {
 }
 
 function digitListener(el) {
-  if (calculator.isFraction) {
-    if (calculator.sign !== null && calculator.b === null) {
-      calculator.b = 0;
-    }
-    if (calculator.fraction === null) {
-      calculator.fraction = el;
-    } else if (`${calculator.fraction}`.length > calculator.maxInputLength) {
-      return;
-    } else {
-      calculator.fraction = +`${calculator.fraction}${el}`;
-    }
-  } else if (!calculator.sign) {
-    if (`${calculator.a}`.length > calculator.maxInputLength) {
-      return;
-    }
+  const {
+    isFraction,
+    fraction,
+    isB,
+    isSign,
+    isCurrentNegative,
+    maxInputLength,
+  } = calculator;
 
-    if (calculator.isCurrentNegative) {
-      calculator.a = +`-${calculator.a}${el}` || -el;
-      calculator.isCurrentNegative = false;
-    } else {
-      calculator.a = +`${calculator.a}${el}` || el;
+  const isCorrectLength = (num) => `${num}`.length <= maxInputLength;
+
+  const setNumber = (num) => {
+    const formattedEl = isCurrentNegative ? `-${num}${el}` : `${num}${el}`;
+    return isCorrectLength(formattedEl) ? +formattedEl || el : num;
+  };
+
+  const setFraction = () => {
+    if (isSign() && !isB()) {
+      return (calculator.b = 0);
     }
+    if (fraction === null) {
+      return (calculator.fraction = el);
+    }
+    if (isCorrectLength(calculator.fraction)) {
+      return (calculator.fraction = +`${calculator.fraction}${el}`);
+    }
+  };
+
+  const setOperand = (operand) => {
+    // operand = 'a' || 'b'
+    if (isCorrectLength(calculator[operand])) {
+      if (isCurrentNegative) {
+        calculator[operand] = setNumber(calculator[operand]);
+        calculator.isCurrentNegative = false;
+      } else {
+        calculator[operand] = setNumber(calculator[operand]);
+      }
+    }
+  };
+
+  if (isFraction) {
+    setFraction();
+  } else if (!isSign()) {
+    setOperand('a');
   } else {
-    if (`${calculator.b}`.length > calculator.maxInputLength) {
-      return;
-    }
-
-    if (calculator.isCurrentNegative) {
-      calculator.b = +`-${calculator.b}${el}` || -el;
-      calculator.isCurrentNegative = false;
-    } else {
-      calculator.b = +`${calculator.b}${el}` || el;
-    }
+    setOperand('b');
   }
+
   calculator.refreshResult();
 }
 
