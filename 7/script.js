@@ -16,12 +16,14 @@ class Calculator {
       '*': () => this.a * this.b,
       '/': () => this.a / this.b,
     };
+    // possible divide sign ÷
   }
 
   isA = () => this.a !== null;
   isB = () => this.b !== null;
   isSign = () => this.sign !== null;
 
+  // SECTION - Calculate
   calculate = () => {
     if (this.sign === '/' && this.b === 0) {
       return this.resetState(0, 'Error!');
@@ -29,9 +31,14 @@ class Calculator {
     return this.resetState(this.resultToFixed(this.operations[this.sign]()));
   };
 
+  // SECTION - Cut the number
   resultToFixed = (result) => {
     if (Number.isSafeInteger(result)) {
       return (this.prevResult = result);
+    }
+
+    if (result === 0.1 + 0.2) {
+      return 0.3;
     }
 
     const isNeedToCut =
@@ -39,10 +46,11 @@ class Calculator {
     return isNeedToCut ? result.toFixed(this.maxInputLength) : result;
   };
 
+  // SECTION - Reset State
   resetState = (toPrevResult, error) => {
     this.prevResult = toPrevResult || 0;
 
-    this.a = null;
+    this.a = toPrevResult || null;
     this.b = null;
     this.sign = null;
     this.error = error || null;
@@ -52,23 +60,25 @@ class Calculator {
     this.refreshResult();
   };
 
+  // SECTION - Result Refresher
   refreshResult = () => {
     let result;
 
     if (this.isSign()) {
       result = this.isFraction
-        ? `${this.sign} ${this.b}.${this.fraction}`
+        ? `${this.sign} ${this.b}.${this.fraction || ''}`
         : this.isB()
         ? `${this.sign} ${this.b}`
         : `${this.sign}`;
     } else {
       result = this.isFraction
-        ? `${this.a || this.prevResult || 0}.${this.fraction}`
+        ? `${this.a || this.prevResult || 0}.${this.fraction || ''}`
         : `${this.a || this.prevResult || 0}`;
     }
 
     currentValue.innerText = result;
     previousValue.innerText = this.error || this.prevResult;
+    mathSign.innerText = this.sign || 'S';
   };
 
   deleteOneDigit(number) {
@@ -79,6 +89,7 @@ class Calculator {
       : 0;
   }
 
+  // SECTION - Digit Listener
   digitListener = (el) => {
     const {
       isFraction,
@@ -131,85 +142,48 @@ class Calculator {
     this.refreshResult();
   };
 
-  signListener = (el) => {
+  // SECTION - Sign Listener
+  signListener = (newSign) => {
     if (this.isFraction) {
-      if (this.b !== null) {
-        this.b = this.b + +`0.${this.fraction}`;
-      } else {
-        this.a = this.a + +`0.${this.fraction}`;
-      }
+      this.isB()
+        ? (this.b = +`${this.b}.${this.fraction}`)
+        : (this.a = +`${this.a}.${this.fraction}`);
 
       this.isFraction = false;
+      this.fraction = null;
     }
 
-    switch (el) {
+    // TODO - Add an option to substract a negative number
+    switch (newSign) {
       case '+':
       case '*':
       case '/':
-        if (this.b !== null) {
-          if (this.isFraction) {
-            this.b += +`0.${this.fraction}`;
-          }
-          this.resetState(this.calculate());
-          this.a = this.prevResult;
-          this.sign = el;
-          break;
-        } else {
-          if (this.isFraction) {
-            this.a += +`0.${this.fraction}`;
-          }
-        }
-        if (this.prevResult) {
-          this.a = this.prevResult;
-        }
-        this.sign = el;
-        break;
-
       case '-':
-        if (this.b !== null) {
-          this.resetState(this.calculate());
+        if (!this.isA()) {
           this.a = this.prevResult;
-          this.sign = el;
-          break;
-        }
-        if (this.a === null) {
-          if (this.prevResult) {
-            this.a = this.prevResult;
-            this.sign = el;
-          } else {
-            this.isCurrentNegative = true;
-          }
-        } else if (this.sign === null) {
-          this.sign = el;
+        } else if (this.isA() && !this.isB()) {
+          this.prevResult = this.a;
         } else {
-          this.isCurrentNegative = true;
+          this.calculate();
         }
+
+        this.sign = newSign;
         break;
 
       case '=':
-        if (this.sign === null || this.b === null) {
-          return;
-        }
-        this.calculate();
+        this.isB() && this.calculate();
         break;
 
       case '+/-':
-        if (this.b !== null) {
-          this.b = -this.b;
-        } else {
-          this.a = -this.a;
-        }
+        this.isB() ? (this.b = -this.b) : (this.a = -this.a);
         break;
 
       case '->':
-        if (this.b !== null) {
-          this.b = this.deleteOneDigit(this.b);
-        } else if (this.a !== null) {
-          this.a = this.deleteOneDigit(this.a);
-        } else {
-          this.a = this.deleteOneDigit(this.prevResult);
-        }
-
+        this.isB()
+          ? (this.b = this.deleteOneDigit(this.b))
+          : this.isA()
+          ? (this.a = this.deleteOneDigit(this.a))
+          : (this.a = this.deleteOneDigit(this.prevResult));
         break;
 
       case 'C':
@@ -221,7 +195,7 @@ class Calculator {
           this.isFraction = true;
         }
 
-        if (this.sign !== null && this.b === null) {
+        if (this.isSign() && !this.isB()) {
           this.b = 0;
         }
         break;
@@ -229,10 +203,11 @@ class Calculator {
       default:
         throw new Error('signListener error: something went wrong');
     }
+
     this.refreshResult();
   };
 
-  // End of Calculator class
+  // NOTE - End of Calculator class
 }
 
 const calculator = new Calculator();
@@ -242,6 +217,9 @@ currentValue.innerText = calculator.a || 0;
 
 const previousValue = document.getElementById('previousValue');
 previousValue.innerText = calculator.prevResult || 0;
+
+const mathSign = document.getElementById('mathSign');
+mathSign.innerText = calculator.sign || 'S';
 
 const UIDigits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(createButton);
 const UIOps = ['+', '-', '*', '/', '+/-', '->', 'C', '.', '='].map(

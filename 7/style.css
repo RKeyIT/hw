@@ -66,12 +66,20 @@ body {
     font-size: 1em;
 }
 
-.previousValue {
+.previousValue,
+.mathSign {
     position: absolute;
-    font-size: 0.6em;
     color: var(--gray-mid);
     left: 0.6em;
+    font-size: 0.6em;
+}
+
+.previousValue {
     top: 0;
+}
+
+.mathSign {
+    bottom: 0;
 }
 
 .buttons {
