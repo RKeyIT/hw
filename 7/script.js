@@ -212,6 +212,31 @@ class Calculator {
 
 const calculator = new Calculator();
 
+document.body.addEventListener('keydown', (e) => {
+  const key = e.key;
+  if (!isNaN(+key)) {
+    return calculator.digitListener(+key);
+  }
+
+  switch (key) {
+    case '+':
+    case '-':
+    case '*':
+    case '/':
+    case '=':
+    case '.':
+      return calculator.signListener(key);
+    case 'Backspace':
+      return calculator.signListener('->');
+    case 'Delete':
+      return calculator.signListener('C');
+    case 'Enter':
+      return calculator.signListener('=');
+    default:
+      return;
+  }
+});
+
 const currentValue = document.getElementById('currentValue');
 currentValue.innerText = calculator.a || 0;
 
