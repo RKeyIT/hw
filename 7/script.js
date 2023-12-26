@@ -66,9 +66,9 @@ class Calculator {
 
     if (this.isSign()) {
       result = this.isFraction
-        ? `${this.sign} ${this.b}.${this.fraction || ''}`
+        ? `${this.b}.${this.fraction || ''}`
         : this.isB()
-        ? `${this.sign} ${this.b}`
+        ? `${this.b}`
         : `${this.sign}`;
     } else {
       result = this.isFraction
