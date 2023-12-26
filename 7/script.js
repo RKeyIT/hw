@@ -8,6 +8,7 @@ class Calculator {
     this.isFraction = false;
     this.isCurrentNegative = false;
     this.prevResult = 0;
+    this.maxInputLength = 8;
 
     this.operations = {
       '+': () => +(this.a + this.b),
@@ -17,37 +18,29 @@ class Calculator {
     };
   }
 
-  isA() {
-    return this.a !== null;
-  }
+  isA = () => this.a !== null;
+  isB = () => this.b !== null;
+  isSign = () => this.sign !== null;
 
-  isB() {
-    return this.b !== null;
-  }
-
-  isSign() {
-    return this.sign !== null;
-  }
-
-  calculate() {
+  calculate = () => {
     if (this.sign === '/' && this.b === 0) {
       return this.resetState(0, 'Error!');
     }
     return this.resetState(this.resultToFixed(this.operations[this.sign]()));
-  }
+  };
 
-  resultToFixed(result) {
+  resultToFixed = (result) => {
     if (Number.isSafeInteger(result)) {
       return (this.prevResult = result);
     }
 
-    const isNeedToCut = `${result}`.length - `${result}`.includes('.') > 8;
-    return isNeedToCut ? result.toFixed(8) : result;
-  }
+    const isNeedToCut =
+      `${result}`.length - `${result}`.includes('.') > this.maxInputLength;
+    return isNeedToCut ? result.toFixed(this.maxInputLength) : result;
+  };
 
-  resetState(toPrevResult, error) {
+  resetState = (toPrevResult, error) => {
     this.prevResult = toPrevResult || 0;
-    console.log(this.prevResult);
 
     this.a = null;
     this.b = null;
@@ -57,9 +50,9 @@ class Calculator {
     this.isFraction = false;
     this.isCurrentNegative = false;
     this.refreshResult();
-  }
+  };
 
-  refreshResult() {
+  refreshResult = () => {
     let result;
 
     if (this.isSign()) {
@@ -76,7 +69,7 @@ class Calculator {
 
     currentValue.innerText = result;
     previousValue.innerText = this.error || this.prevResult;
-  }
+  };
 }
 
 const calculator = new Calculator();
