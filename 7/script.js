@@ -9,6 +9,7 @@ class Calculator {
     this.isCurrentNegative = false;
     this.prevResult = 0;
     this.maxInputLength = 8;
+    this.maxFractionLength = 3;
 
     this.operations = {
       '+': () => +(this.a + this.b),
@@ -37,10 +38,11 @@ class Calculator {
       return (this.prevResult = result);
     }
 
-    const isNeedToCut = `${result}`.length - `${result}`.includes('.') > 2;
+    const isNeedToCut =
+      `${result}`.length - `${result}`.includes('.') > this.maxFractionLength;
     // Handle cases with big fractions as result after 0.1 + 0.2
     if (isNeedToCut) {
-      result = result.toFixed(2);
+      result = result.toFixed(this.maxFractionLength);
       result = +`${result}`.replace(/(\.[1-9]+)0+\b/g, '$1');
       console.log(result);
     }
@@ -85,9 +87,16 @@ class Calculator {
   deleteOneDigit(number) {
     let preResetNumLength = `${number}`[0] === '-' ? 2 : 1;
 
-    return `${number}`.length > preResetNumLength
-      ? +`${number}`.replace(/(.+).+\b/, '$1')
-      : 0;
+    if (`${number}`.length > preResetNumLength) {
+      return (this.prevResult = +`${number}`.replace(/(.+).+\b/, '$1'));
+    }
+
+    if (this.isFraction) {
+      this.fraction = null;
+      this.isFraction = false;
+    }
+
+    return (this.prevResult = 0);
   }
 
   // SECTION - Digit Listener
@@ -102,7 +111,8 @@ class Calculator {
     } = calculator;
 
     const isCorrectLength = (num) => `${num}`.length <= maxInputLength;
-    const isCorrectFractionLength = (num) => `${num}`.length <= 2;
+    const isCorrectFractionLength = (num) =>
+      `${num}`.length < this.maxFractionLength;
 
     const setNumber = (num) => {
       const formattedEl = isCurrentNegative ? `-${num}${el}` : `${num}${el}`;
