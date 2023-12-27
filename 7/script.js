@@ -1,4 +1,8 @@
 class Calculator {
+  // TODO - Add 0.0.. type numbers functionallity (it's related with next TODOs)
+  // TODO - extract the type casting logic and put it to math methods
+  // TODO - other number values must be stored as the strings
+
   constructor() {
     this.a = null;
     this.b = null;
@@ -12,10 +16,10 @@ class Calculator {
     this.maxFractionLength = 3;
 
     this.operations = {
-      '+': () => +(this.a + this.b),
-      '-': () => this.a - this.b,
-      '*': () => this.a * this.b,
-      '/': () => this.a / this.b,
+      '+': () => +(+this.a + +this.b),
+      '-': () => +this.a - +this.b,
+      '*': () => +this.a * +this.b,
+      '/': () => +this.a / +this.b,
     };
     // possible divide sign ÷
   }
