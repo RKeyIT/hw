@@ -37,13 +37,14 @@ class Calculator {
       return (this.prevResult = result);
     }
 
-    if (result === 0.1 + 0.2) {
-      return 0.3;
+    const isNeedToCut = `${result}`.length - `${result}`.includes('.') > 2;
+    // Handle cases with big fractions as result after 0.1 + 0.2
+    if (isNeedToCut) {
+      result = result.toFixed(2);
+      result = +`${result}`.replace(/(\.[1-9]+)0+\b/g, '$1');
+      console.log(result);
     }
-
-    const isNeedToCut =
-      `${result}`.length - `${result}`.includes('.') > this.maxInputLength;
-    return isNeedToCut ? result.toFixed(this.maxInputLength) : result;
+    return (this.prevResult = result);
   };
 
   // SECTION - Reset State
@@ -101,6 +102,7 @@ class Calculator {
     } = calculator;
 
     const isCorrectLength = (num) => `${num}`.length <= maxInputLength;
+    const isCorrectFractionLength = (num) => `${num}`.length <= 2;
 
     const setNumber = (num) => {
       const formattedEl = isCurrentNegative ? `-${num}${el}` : `${num}${el}`;
@@ -114,7 +116,7 @@ class Calculator {
       if (fraction === null) {
         return (this.fraction = el);
       }
-      if (isCorrectLength(this.fraction)) {
+      if (isCorrectFractionLength(this.fraction)) {
         return (this.fraction = +`${this.fraction}${el}`);
       }
     };
