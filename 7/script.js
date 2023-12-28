@@ -27,7 +27,7 @@ class Calculator {
   };
 
   #operations = {
-    '+': () => +(+this.a + +this.b),
+    '+': () => +this.a + +this.b,
     '-': () => +this.a - +this.b,
     '*': () => +this.a * +this.b,
     '/': () => +this.a / +this.b,
@@ -71,17 +71,20 @@ class Calculator {
 
   // SECTION - Cut the number
   resultToFixed = (result) => {
-    if (Number.isSafeInteger(+result)) {
-      return (this.prevResult = result);
+    // NOTE - Input is a number type
+    // FIXME - So dangerous method
+    if (Number.isSafeInteger(result)) {
+      return (this.prevResult = `${result}`);
     }
 
-    const isNeedToCut =
-      `${result}`.length - `${result}`.includes('.') > this.maxFractionLength;
+    const countOfNumsAfterDot = `${result}`.length - `${result}`.includes('.');
+    const isNeedToCut = countOfNumsAfterDot > this.maxFractionLength;
     // Handle cases with big fractions as result after 0.1 + 0.2
     if (isNeedToCut) {
       result = result.toFixed(this.maxFractionLength);
-      result = result.replace(/(\.[1-9]+)0+\b/g, '$1');
     }
+
+    result = `${result}`.replace(/(\.\d*[1-9])0+\b/g, '$1');
 
     return (this.prevResult = result);
   };
@@ -117,19 +120,19 @@ class Calculator {
     mathSign.innerText = this.sign || 'S';
   };
 
-  deleteOneDigit(numString) {
+  removeOneDigit(numString) {
     const preResetNumLength = this.isFraction + (numString[0] === '-' ? 2 : 1);
 
     if (numString.length > preResetNumLength) {
-      return numString.replace(/(.+).+\b/, '$1');
+      return numString.replace(/(.+).\b/, '$1');
     }
 
-    if (this.isFraction) {
-      this.fraction = null;
-      this.isFraction = false;
-    }
+    // if (this.isFraction && this.fraction === '') {
+    //   this.fraction = null;
+    //   this.isFraction = false;
+    // }
 
-    return numString;
+    return '0';
   }
 
   // SECTION - Add Listener method
@@ -210,13 +213,15 @@ class Calculator {
 
   // SECTION - Sign Listener
   signListener = (newSign) => {
+    // TODO - Removing last digit of fraction with dot is not working!
+    // FIXME
     if (this.isFraction) {
       this.isB()
         ? (this.b = `${this.b}.${this.fraction}`)
         : (this.a = `${this.a}.${this.fraction}`);
 
-      this.isFraction = false;
       this.fraction = null;
+      this.isFraction = false;
     }
 
     switch (newSign) {
@@ -257,10 +262,10 @@ class Calculator {
 
       case '->':
         this.isB()
-          ? (this.b = this.deleteOneDigit(this.b))
+          ? (this.b = this.removeOneDigit(this.b))
           : this.isA()
-          ? (this.a = this.deleteOneDigit(this.a))
-          : (this.a = this.deleteOneDigit(this.prevResult));
+          ? (this.a = this.removeOneDigit(this.a))
+          : (this.a = this.removeOneDigit(this.prevResult));
         break;
 
       case 'C':
@@ -268,12 +273,20 @@ class Calculator {
         break;
 
       case '.':
+        if (this.isFraction) {
+          break;
+        }
+
         if (!this.isFraction) {
           this.isFraction = true;
         }
 
         if (this.isSign() && !this.isB()) {
           this.b = '0';
+        }
+
+        if (!this.isA()) {
+          this.a = '0';
         }
 
         break;
