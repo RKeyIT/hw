@@ -69,7 +69,7 @@ class Calculator {
 
   // SECTION - Cut the number
   resultToFixed = (result) => {
-    if (Number.isSafeInteger(result)) {
+    if (Number.isSafeInteger(+result)) {
       return (this.prevResult = result);
     }
 
@@ -78,7 +78,7 @@ class Calculator {
     // Handle cases with big fractions as result after 0.1 + 0.2
     if (isNeedToCut) {
       result = result.toFixed(this.maxFractionLength);
-      result = `${result}`.replace(/(\.[1-9]+)0+\b/g, '$1');
+      result = result.replace(/(\.[1-9]+)0+\b/g, '$1');
     }
     return (this.prevResult = result);
   };
@@ -87,7 +87,7 @@ class Calculator {
   resetState = (toPrevResult, error) => {
     this.prevResult = toPrevResult || '0';
 
-    this.a = toPrevResult || null;
+    this.a = null;
     this.b = null;
     this.sign = null;
     this.error = error || null;
