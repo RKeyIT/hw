@@ -15,10 +15,13 @@ class Calculator {
     '*': '*',
     '/': '/',
     '.': '.',
+    ',': '.', // <- Rus key
     Backspace: '->',
     Delete: 'C',
     C: 'C',
     c: 'C',
+    с: 'C', // <- Rus key
+    С: 'C', // <- Rus key
     '=': '=',
     Enter: '=',
   };
@@ -85,7 +88,6 @@ class Calculator {
     this.prevResult = toPrevResult || '0';
 
     this.a = toPrevResult || null;
-    console.log(this.a);
     this.b = null;
     this.sign = null;
     this.error = error || null;
@@ -100,27 +102,23 @@ class Calculator {
     let result;
 
     if (this.isSign()) {
-      result = this.isFraction
-        ? `${this.b}.${this.fraction || ''}`
-        : this.isB()
-        ? `${this.b}`
-        : `${this.sign}`;
+      result = this.isB() ? `${this.b}` : `${this.sign}`;
     } else {
-      result = this.isFraction
-        ? `${this.a || this.prevResult || '0'}.${this.fraction || ''}`
-        : `${this.a || this.prevResult || '0'}`;
+      result = this.a || this.prevResult || '0';
     }
 
-    currentValue.innerText = result;
+    currentValue.innerText = this.isFraction
+      ? result + '.' + (this.fraction || '')
+      : result;
     previousValue.innerText = this.error || this.prevResult;
     mathSign.innerText = this.sign || 'S';
   };
 
-  deleteOneDigit(number) {
-    let preResetNumLength = `${number}`[0] === '-' ? 2 : 1;
+  deleteOneDigit(numString) {
+    const preResetNumLength = this.isFraction + (numString[0] === '-' ? 2 : 1);
 
-    if (`${number}`.length > preResetNumLength) {
-      return (this.prevResult = +`${number}`.replace(/(.+).+\b/, '$1'));
+    if (numString.length > preResetNumLength) {
+      return numString.replace(/(.+).+\b/, '$1');
     }
 
     if (this.isFraction) {
@@ -128,13 +126,13 @@ class Calculator {
       this.isFraction = false;
     }
 
-    return (this.prevResult = '0');
+    return numString;
   }
 
   // SECTION - Add Listener method
   addHandler(key, handler) {
-    if (!this.#buttonsObj[key]) return;
-    handler(this.#buttonsObj[key]);
+    if (!this.buttonsObj[key]) return;
+    handler(this.buttonsObj[key]);
   }
 
   // SECTION - Digit Listener
@@ -213,7 +211,6 @@ class Calculator {
       this.fraction = null;
     }
 
-    // TODO - Add an option to substract a negative number
     switch (newSign) {
       case '+':
       case '*':
@@ -273,7 +270,7 @@ class Calculator {
 const calculator = new Calculator();
 
 // SECTION - Operations and numbers global listener
-document.body.addEventListener('keypress', (e) => {
+document.body.addEventListener('keydown', (e) => {
   if (!calculator.buttonsObj[e.key]) return;
 
   if (isNaN(+e.key)) {
