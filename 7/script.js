@@ -216,16 +216,26 @@ class Calculator {
       case '*':
       case '/':
       case '-':
+        if (this.isA() && this.isB()) {
+          this.calculate();
+          this.a = this.prevResult;
+          this.sign = newSign;
+          break;
+        }
+        if (this.isA() && !this.isB()) {
+          this.prevResult = this.a;
+          this.sign = newSign;
+          break;
+        }
         if (!this.isA()) {
           this.a = this.prevResult;
-        } else if (this.isA() && !this.isB()) {
-          this.prevResult = this.a;
-        } else {
-          this.calculate();
+          this.sign = newSign;
+          break;
         }
 
-        this.sign = newSign;
-        break;
+        throw new Error(
+          'signListener: switch-case (+-*/): Something went wrong!'
+        );
 
       case '=':
         this.isB() && this.calculate();
