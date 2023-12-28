@@ -33,66 +33,86 @@
 */
 
 class Stack {
+  #nodeCounter = 0;
+  #root = null;
+
   constructor(maxLength = 10) {
-    if (
-      typeof maxLength !== 'number' ||
-      isNaN(maxLength) ||
-      !isFinite(maxLength)
-    ) {
-      throw new Error('Length of Stack should be a valid number!');
-    }
-    this.values = [];
     this.maxLength = maxLength;
   }
 
   static fromIterable(iterable) {
-    if (iterable.length === undefined) {
-      throw new Error('Полученая сущность не является итерируемой');
+    if (!iterable[Symbol.iterator]) {
+      throw new Error('Получена не итерируемая сущность.');
     }
 
-    const instance = new Stack(iterable.length);
+    const stack = new Stack(iterable.length || iterable.size);
 
-    iterable.forEach((el) => instance.push(el));
+    for (const element of iterable) {
+      stack.push(element);
+    }
 
-    return instance;
+    return stack;
   }
 
-  push(elem) {
-    if (this.values.length >= this.maxLength) {
+  isEmpty() {
+    return this.#root === null;
+  }
+
+  push(element) {
+    if (this.#nodeCounter >= this.maxLength) {
       throw new Error('Стек переполнен!');
-    } else {
-      this.values = [...this.values, elem];
     }
+    this.#nodeCounter++;
+    this.#root = new Node(element, this.#root);
   }
 
   pop() {
     if (this.isEmpty()) {
       throw new Error('Стек пуст!');
-    } else {
-      const element = this.peek();
-      this.values.length = this.values.length - 1;
-      return element;
     }
+
+    const element = this.#root;
+    this.#root = this.#root.next;
+    this.#nodeCounter--;
+
+    return element.value;
   }
 
   peek() {
-    if (this.isEmpty()) {
-      return null;
-    } else {
-      return this.values[this.values.length - 1];
-    }
+    return this.#root.value;
   }
 
-  isEmpty() {
-    return !this.values.length;
-  }
   toArray() {
-    return [...this.values];
+    let rootCopy = this.#root;
+
+    if (rootCopy === null) {
+      return null;
+    }
+
+    const array = [];
+
+    while (rootCopy) {
+      // or push for reverse logic
+      array.unshift(rootCopy.value);
+      rootCopy = rootCopy.next;
+    }
+
+    return array;
+  }
+}
+
+class Node {
+  constructor(value, next = null) {
+    this.value = value;
+    this.next = next;
   }
 }
 
 const a = Stack.fromIterable([1, 2, 3]);
+const b = a.toArray();
 console.log(a);
+console.log(a.peek());
+console.log(b);
 
 const stack = new Stack(5);
 stack.push(1);
@@ -100,6 +120,10 @@ stack.push(2);
 stack.push(3);
 stack.push(4);
 stack.push(5);
+
+const stackArray = stack.toArray();
+console.log(stackArray);
+console.log(stack.pop());
 // stack.push(6); // Error
 
 console.log(stack.isEmpty());
@@ -108,5 +132,15 @@ console.log(stack.peek());
 console.log(stack.pop());
 console.log(stack.pop());
 console.log(stack.pop());
-console.log(stack.pop());
 // console.log(stack.pop()); // Error
+
+const map = new Map();
+const mapStack = Stack.fromIterable(map);
+console.log(mapStack);
+
+const set = new Set();
+set.add(5);
+set.add(2);
+set.add(2);
+const setStack = Stack.fromIterable(set);
+console.log(setStack);
