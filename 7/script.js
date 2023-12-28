@@ -38,7 +38,7 @@ class Calculator {
     this.fraction = null;
     this.isFraction = false;
     this.isCurrentNegative = false;
-    this.prevResult = 0;
+    this.prevResult = '0';
     this.maxInputLength = 10;
     this.maxFractionLength = 3;
 
