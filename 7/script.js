@@ -1,7 +1,34 @@
 class Calculator {
-  // TODO - Add 0.0.. type numbers functionallity (it's related with next TODOs)
-  // TODO - extract the type casting logic and put it to math methods
-  // TODO - other number values must be stored as the strings
+  #buttonsObj = {
+    0: '0',
+    1: '1',
+    2: '2',
+    3: '3',
+    4: '4',
+    5: '5',
+    6: '6',
+    7: '7',
+    8: '8',
+    9: '9',
+    '+': '+',
+    '-': '-',
+    '*': '*',
+    '/': '/',
+    '.': '.',
+    Backspace: '->',
+    Delete: 'C',
+    C: 'C',
+    c: 'C',
+    '=': '=',
+    Enter: '=',
+  };
+
+  #operations = {
+    '+': () => +(+this.a + +this.b),
+    '-': () => +this.a - +this.b,
+    '*': () => +this.a * +this.b,
+    '/': () => +this.a / +this.b,
+  };
 
   constructor() {
     this.a = null;
@@ -15,37 +42,14 @@ class Calculator {
     this.maxInputLength = 10;
     this.maxFractionLength = 3;
 
-    this.operations = {
-      '+': () => +(+this.a + +this.b),
-      '-': () => +this.a - +this.b,
-      '*': () => +this.a * +this.b,
-      '/': () => +this.a / +this.b,
-    };
     // possible divide sign ÷
+  }
 
-    this.buttonsObj = {
-      0: '0',
-      1: '1',
-      2: '2',
-      3: '3',
-      4: '4',
-      5: '5',
-      6: '6',
-      7: '7',
-      8: '8',
-      9: '9',
-      '+': '+',
-      '-': '-',
-      '*': '*',
-      '/': '/',
-      '.': '.',
-      Backspace: '->',
-      Delete: 'C',
-      C: 'C',
-      c: 'C',
-      '=': '=',
-      Enter: '=',
-    };
+  get operations() {
+    return this.#operations;
+  }
+  get buttonsObj() {
+    return this.#buttonsObj;
   }
 
   isA = () => this.a !== null;
@@ -54,7 +58,7 @@ class Calculator {
 
   // SECTION - Calculate
   calculate = () => {
-    if (this.sign === '/' && this.b === 0) {
+    if (this.sign === '/' && this.b === '0') {
       return this.resetState('0', 'Error!');
     }
     return this.resetState(this.resultToFixed(this.operations[this.sign]()));
@@ -81,6 +85,7 @@ class Calculator {
     this.prevResult = toPrevResult || '0';
 
     this.a = toPrevResult || null;
+    console.log(this.a);
     this.b = null;
     this.sign = null;
     this.error = error || null;
@@ -128,8 +133,8 @@ class Calculator {
 
   // SECTION - Add Listener method
   addHandler(key, handler) {
-    if (!this.buttonsObj[key]) return;
-    handler(this.buttonsObj[key]);
+    if (!this.#buttonsObj[key]) return;
+    handler(this.#buttonsObj[key]);
   }
 
   // SECTION - Digit Listener
