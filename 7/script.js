@@ -64,7 +64,9 @@ class Calculator {
     if (this.sign === '/' && this.b === '0') {
       return this.resetState('0', 'Error!');
     }
-    return this.resetState(this.resultToFixed(this.operations[this.sign]()));
+
+    const result = this.operations[this.sign]();
+    return this.resetState(this.resultToFixed(result));
   };
 
   // SECTION - Cut the number
@@ -80,6 +82,7 @@ class Calculator {
       result = result.toFixed(this.maxFractionLength);
       result = result.replace(/(\.[1-9]+)0+\b/g, '$1');
     }
+
     return (this.prevResult = result);
   };
 
@@ -132,6 +135,7 @@ class Calculator {
   // SECTION - Add Listener method
   addHandler(key, handler) {
     if (!this.buttonsObj[key]) return;
+
     handler(this.buttonsObj[key]);
   }
 
@@ -152,6 +156,7 @@ class Calculator {
 
     const setNumber = (operand) => {
       if (operand === '0' && el === '0') return operand;
+
       if ((!operand && operand !== '0') || (operand === '0' && el !== '0')) {
         operand = '';
       }
@@ -166,12 +171,15 @@ class Calculator {
       if (this.isSign() && !this.isB()) {
         this.b = '0';
       }
+
       if (!this.isA()) {
         this.a = '0';
       }
+
       if (fraction === null) {
         return (this.fraction = el);
       }
+
       if (isCorrectFractionLength(this.fraction)) {
         return (this.fraction = `${this.fraction}${el}`);
       }
@@ -222,11 +230,13 @@ class Calculator {
           this.sign = newSign;
           break;
         }
+
         if (this.isA() && !this.isB()) {
           this.prevResult = this.a;
           this.sign = newSign;
           break;
         }
+
         if (!this.isA()) {
           this.a = this.prevResult;
           this.sign = newSign;
@@ -265,6 +275,7 @@ class Calculator {
         if (this.isSign() && !this.isB()) {
           this.b = '0';
         }
+
         break;
 
       default:
