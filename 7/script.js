@@ -12,7 +12,7 @@ class Calculator {
     this.isFraction = false;
     this.isCurrentNegative = false;
     this.prevResult = 0;
-    this.maxInputLength = 8;
+    this.maxInputLength = 10;
     this.maxFractionLength = 3;
 
     this.operations = {
@@ -22,6 +22,30 @@ class Calculator {
       '/': () => +this.a / +this.b,
     };
     // possible divide sign ÷
+
+    this.buttonsObj = {
+      0: '0',
+      1: '1',
+      2: '2',
+      3: '3',
+      4: '4',
+      5: '5',
+      6: '6',
+      7: '7',
+      8: '8',
+      9: '9',
+      '+': '+',
+      '-': '-',
+      '*': '*',
+      '/': '/',
+      '.': '.',
+      Backspace: '->',
+      Delete: 'C',
+      C: 'C',
+      c: 'C',
+      '=': '=',
+      Enter: '=',
+    };
   }
 
   isA = () => this.a !== null;
@@ -31,7 +55,7 @@ class Calculator {
   // SECTION - Calculate
   calculate = () => {
     if (this.sign === '/' && this.b === 0) {
-      return this.resetState(0, 'Error!');
+      return this.resetState('0', 'Error!');
     }
     return this.resetState(this.resultToFixed(this.operations[this.sign]()));
   };
@@ -47,15 +71,14 @@ class Calculator {
     // Handle cases with big fractions as result after 0.1 + 0.2
     if (isNeedToCut) {
       result = result.toFixed(this.maxFractionLength);
-      result = +`${result}`.replace(/(\.[1-9]+)0+\b/g, '$1');
-      console.log(result);
+      result = `${result}`.replace(/(\.[1-9]+)0+\b/g, '$1');
     }
     return (this.prevResult = result);
   };
 
   // SECTION - Reset State
   resetState = (toPrevResult, error) => {
-    this.prevResult = toPrevResult || 0;
+    this.prevResult = toPrevResult || '0';
 
     this.a = toPrevResult || null;
     this.b = null;
@@ -79,8 +102,8 @@ class Calculator {
         : `${this.sign}`;
     } else {
       result = this.isFraction
-        ? `${this.a || this.prevResult || 0}.${this.fraction || ''}`
-        : `${this.a || this.prevResult || 0}`;
+        ? `${this.a || this.prevResult || '0'}.${this.fraction || ''}`
+        : `${this.a || this.prevResult || '0'}`;
     }
 
     currentValue.innerText = result;
@@ -100,7 +123,13 @@ class Calculator {
       this.isFraction = false;
     }
 
-    return (this.prevResult = 0);
+    return (this.prevResult = '0');
+  }
+
+  // SECTION - Add Listener method
+  addHandler(key, handler) {
+    if (!this.buttonsObj[key]) return;
+    handler(this.buttonsObj[key]);
   }
 
   // SECTION - Digit Listener
@@ -118,20 +147,30 @@ class Calculator {
     const isCorrectFractionLength = (num) =>
       `${num}`.length < this.maxFractionLength;
 
-    const setNumber = (num) => {
-      const formattedEl = isCurrentNegative ? `-${num}${el}` : `${num}${el}`;
-      return isCorrectLength(formattedEl) ? +formattedEl || el : num;
+    const setNumber = (operand) => {
+      if (operand === '0' && el === '0') return operand;
+      if ((!operand && operand !== '0') || (operand === '0' && el !== '0')) {
+        operand = '';
+      }
+
+      const formattedEl = isCurrentNegative
+        ? `-${operand}${el}`
+        : `${operand}${el}`;
+      return isCorrectLength(formattedEl) ? formattedEl : operand;
     };
 
     const setFraction = () => {
-      if (isSign() && !isB()) {
-        return (this.b = 0);
+      if (this.isSign() && !this.isB()) {
+        this.b = '0';
+      }
+      if (!this.isA()) {
+        this.a = '0';
       }
       if (fraction === null) {
         return (this.fraction = el);
       }
       if (isCorrectFractionLength(this.fraction)) {
-        return (this.fraction = +`${this.fraction}${el}`);
+        return (this.fraction = `${this.fraction}${el}`);
       }
     };
 
@@ -162,8 +201,8 @@ class Calculator {
   signListener = (newSign) => {
     if (this.isFraction) {
       this.isB()
-        ? (this.b = +`${this.b}.${this.fraction}`)
-        : (this.a = +`${this.a}.${this.fraction}`);
+        ? (this.b = `${this.b}.${this.fraction}`)
+        : (this.a = `${this.a}.${this.fraction}`);
 
       this.isFraction = false;
       this.fraction = null;
@@ -191,7 +230,7 @@ class Calculator {
         break;
 
       case '+/-':
-        this.isB() ? (this.b = -this.b) : (this.a = -this.a);
+        this.isB() ? (this.b = `${-+this.b}`) : (this.a = `${-+this.a}`);
         break;
 
       case '->':
@@ -212,7 +251,7 @@ class Calculator {
         }
 
         if (this.isSign() && !this.isB()) {
-          this.b = 0;
+          this.b = '0';
         }
         break;
 
@@ -228,55 +267,60 @@ class Calculator {
 
 const calculator = new Calculator();
 
-document.body.addEventListener('keydown', (e) => {
-  const key = e.key;
-  if (!isNaN(+key)) {
-    return calculator.digitListener(+key);
-  }
+// SECTION - Operations and numbers global listener
+document.body.addEventListener('keypress', (e) => {
+  if (!calculator.buttonsObj[e.key]) return;
 
-  switch (key) {
-    case '+':
-    case '-':
-    case '*':
-    case '/':
-    case '=':
-    case '.':
-      return calculator.signListener(key);
-    case 'Backspace':
-      return calculator.signListener('->');
-    case 'Delete':
-      return calculator.signListener('C');
-    case 'Enter':
-      return calculator.signListener('=');
-    default:
-      return;
+  if (isNaN(+e.key)) {
+    calculator.addHandler(e.key, calculator.signListener);
+  } else {
+    calculator.addHandler(e.key, calculator.digitListener);
   }
 });
 
+// SECTION - Button active class switchers
+document.body.addEventListener('keydown', (e) => {
+  function addActiveClass(id) {
+    const element = document.getElementById(id);
+    element.classList.add('active');
+  }
+
+  calculator.addHandler(e.key, addActiveClass);
+});
+document.body.addEventListener('keyup', (e) => {
+  function removeActiveClass(id) {
+    const element = document.getElementById(id);
+    element.classList.remove('active');
+  }
+
+  calculator.addHandler(e.key, removeActiveClass);
+});
+
 const currentValue = document.getElementById('currentValue');
-currentValue.innerText = calculator.a || 0;
+currentValue.innerText = calculator.a || '0';
 
 const previousValue = document.getElementById('previousValue');
-previousValue.innerText = calculator.prevResult || 0;
+previousValue.innerText = calculator.prevResult || '0';
 
 const mathSign = document.getElementById('mathSign');
 mathSign.innerText = calculator.sign || 'S';
 
-const UIDigits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(createButton);
+const UIDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].map(
+  createButton
+);
 const UIOps = ['+', '-', '*', '/', '+/-', '->', 'C', '.', '='].map(
   createButton
 );
-
-const buttonsContainer = document.getElementById('buttons');
 
 function createButton(el) {
   const btn = document.createElement('button');
   const text = document.createTextNode(el);
   btn.appendChild(text);
   btn.type = 'button';
+  btn.id = el;
 
-  if (typeof el === 'number') {
-    btn.addEventListener('click', () => calculator.digitListener(el));
+  if (!isNaN(+el)) {
+    btn.addEventListener('click', () => calculator.digitListener(String(el)));
     btn.className = `btn digit ${el}`;
     btn.style = `grid-area: d${el}`;
   } else {
@@ -313,6 +357,7 @@ function generateSignName(el) {
   }
 }
 
+const buttonsContainer = document.getElementById('buttons');
 function renderButtons() {
   for (let i = 0; i < UIDigits.length; i++) {
     buttonsContainer.appendChild(UIDigits[i]);
