@@ -110,12 +110,14 @@ class Calculator {
     if (this.isSign()) {
       result = this.isB() ? `${this.b}` : `${this.sign}`;
     } else {
-      result = this.a || this.prevResult || '0';
+      result = this.a || this.prevResult;
     }
 
-    currentValue.innerText = this.isFraction
-      ? result + '.' + (this.fraction || '')
-      : result;
+    // currentValue.innerText = this.isFraction
+    //   ? result + '.' + (this.fraction || '')
+    //   : result;
+
+    currentValue.innerText = result;
     previousValue.innerText = this.error || this.prevResult;
     mathSign.innerText = this.sign || 'S';
   };
@@ -127,33 +129,19 @@ class Calculator {
       return numString.replace(/(.+).\b/, '$1');
     }
 
-    // if (this.isFraction && this.fraction === '') {
-    //   this.fraction = null;
-    //   this.isFraction = false;
-    // }
-
     return '0';
   }
 
   // SECTION - Add Listener method
   addHandler(key, handler) {
-    if (!this.buttonsObj[key]) return;
-
-    handler(this.buttonsObj[key]);
+    this.buttonsObj[key] && handler(this.buttonsObj[key]);
   }
 
   // SECTION - Digit Listener
   digitListener = (el) => {
-    const {
-      isFraction,
-      fraction,
-      isB,
-      isSign,
-      isCurrentNegative,
-      maxInputLength,
-    } = calculator;
+    const currentOperand = this.isSign() ? 'b' : 'a';
 
-    const isCorrectLength = (num) => `${num}`.length <= maxInputLength;
+    const isCorrectLength = (num) => `${num}`.length <= this.maxInputLength;
     const isCorrectFractionLength = (num) =>
       `${num}`.length < this.maxFractionLength;
 
@@ -164,7 +152,7 @@ class Calculator {
         operand = '';
       }
 
-      const formattedEl = isCurrentNegative
+      const formattedEl = this.isCurrentNegative
         ? `-${operand}${el}`
         : `${operand}${el}`;
       return isCorrectLength(formattedEl) ? formattedEl : operand;
@@ -179,33 +167,36 @@ class Calculator {
         this.a = '0';
       }
 
-      if (fraction === null) {
-        return (this.fraction = el);
+      if (this.fraction === null) {
+        this.fraction = el;
+      } else {
+        this.fraction = isCorrectFractionLength(this.fraction)
+          ? this.fraction + el
+          : this.fraction;
       }
 
-      if (isCorrectFractionLength(this.fraction)) {
-        return (this.fraction = `${this.fraction}${el}`);
-      }
+      this[currentOperand] = this[currentOperand].replace(/(\d+).*/, '$1');
+      this[currentOperand] += '.' + this.fraction;
+      return this[currentOperand];
     };
 
-    const setOperand = (operand) => {
+    const setOperand = () => {
       // operand = 'a' || 'b'
-      if (isCorrectLength(this[operand])) {
-        if (isCurrentNegative) {
-          this[operand] = setNumber(this[operand]);
+      if (isCorrectLength(this[currentOperand])) {
+        if (this.isCurrentNegative) {
+          this[currentOperand] = setNumber(this[currentOperand]);
           this.isCurrentNegative = false;
         } else {
-          this[operand] = setNumber(this[operand]);
+          this[currentOperand] = setNumber(this[currentOperand]);
         }
       }
     };
 
-    if (isFraction) {
+    console.log(this.isFraction);
+    if (this.isFraction) {
       setFraction();
-    } else if (!isSign()) {
-      setOperand('a');
     } else {
-      setOperand('b');
+      setOperand();
     }
 
     this.refreshResult();
@@ -216,12 +207,14 @@ class Calculator {
     // TODO - Removing last digit of fraction with dot is not working!
     // FIXME
     if (this.isFraction) {
-      this.isB()
-        ? (this.b = `${this.b}.${this.fraction}`)
-        : (this.a = `${this.a}.${this.fraction}`);
+      // this.isB()
+      //   ? (this.b = `${this.b}.${this.fraction}`)
+      //   : (this.a = `${this.a}.${this.fraction}`);
 
       this.fraction = null;
       this.isFraction = false;
+      // } else {
+      //   this.isB() ? (this.b = +this.b + '') : (this.a = +this.a + '');
     }
 
     switch (newSign) {
@@ -288,6 +281,10 @@ class Calculator {
         if (!this.isA()) {
           this.a = '0';
         }
+
+        // NOTE - Put the dot to existed operand
+        // TODO - Check the dot in removeOneDigit() method
+        this.b ? (this.b += '.') : (this.a += '.');
 
         break;
 
@@ -356,6 +353,7 @@ function createButton(el) {
   btn.id = el;
 
   if (!isNaN(+el)) {
+    // NOTE -REFACTORING- is need to casting to String an element?
     btn.addEventListener('click', () => calculator.digitListener(String(el)));
     btn.className = `btn digit ${el}`;
     btn.style = `grid-area: d${el}`;
