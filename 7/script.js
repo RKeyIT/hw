@@ -344,7 +344,7 @@ function createButton(el) {
 
   if (!isNaN(+el)) {
     // NOTE -REFACTORING- is need to casting to String an element?
-    btn.addEventListener('click', () => calculator.digitListener(String(el)));
+    btn.addEventListener('click', () => calculator.digitListener(el));
     btn.className = `btn digit ${el}`;
     btn.style = `grid-area: d${el}`;
   } else {
