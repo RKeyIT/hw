@@ -123,13 +123,17 @@ class Calculator {
   };
 
   removeOneDigit(numString) {
-    const preResetNumLength = this.isFraction + (numString[0] === '-' ? 2 : 1);
+    const preResetNumLength = numString[0] === '-' ? 2 : 1;
 
-    if (numString.length > preResetNumLength) {
-      return numString.replace(/(.+).\b/, '$1');
+    if (numString.length <= preResetNumLength) return '0';
+
+    if (numString[numString.length - 2] === '.') {
+      this.fraction = null;
+      this.isFraction = false;
+      return numString.replace(/(\d+)\.\d/, '$1');
     }
 
-    return '0';
+    return numString.replace(/(.+).\b/, '$1');
   }
 
   // SECTION - Add Listener method
