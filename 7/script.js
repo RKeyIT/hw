@@ -40,7 +40,6 @@ class Calculator {
     this.error = null;
     this.fraction = null;
     this.isFraction = false;
-    this.isCurrentNegative = false;
     this.prevResult = '0';
     this.maxInputLength = 10;
     this.maxFractionLength = 3;
@@ -100,7 +99,6 @@ class Calculator {
     this.error = error || null;
     this.fraction = null;
     this.isFraction = false;
-    this.isCurrentNegative = false;
     this.refreshResult();
   };
 
@@ -153,10 +151,9 @@ class Calculator {
         operand = '';
       }
 
-      const formattedEl = this.isCurrentNegative
-        ? `-${operand}${el}`
-        : `${operand}${el}`;
-      return isCorrectLength(formattedEl) ? formattedEl : operand;
+      const settledOperand = operand + el;
+
+      return isCorrectLength(settledOperand) ? settledOperand : operand;
     };
 
     const setFraction = (operand) => {
@@ -185,12 +182,7 @@ class Calculator {
     const setOperand = (operand) => {
       // operand = 'a' || 'b'
       if (isCorrectLength(this[operand])) {
-        if (this.isCurrentNegative) {
-          this[operand] = setNumber(this[operand]);
-          this.isCurrentNegative = false;
-        } else {
-          this[operand] = setNumber(this[operand]);
-        }
+        this[operand] = setNumber(this[operand]);
       }
     };
 
@@ -243,7 +235,13 @@ class Calculator {
         break;
 
       case '+/-':
+        if (!this.isA()) {
+          this.a = this.prevResult;
+        }
+
+        // FIXME  1.111 => click(+/-) = -1.111 + 0.111 = 1 instead of -1
         this.isB() ? (this.b = `${-+this.b}`) : (this.a = `${-+this.a}`);
+        console.log(this.a, this.b);
         break;
 
       case '->':
