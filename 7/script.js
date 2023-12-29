@@ -79,6 +79,7 @@ class Calculator {
 
     const countOfNumsAfterDot = `${result}`.length - `${result}`.includes('.');
     const isNeedToCut = countOfNumsAfterDot > this.maxFractionLength;
+
     // Handle cases with big fractions as result after 0.1 + 0.2
     if (isNeedToCut) {
       result = result.toFixed(this.maxFractionLength);
@@ -112,10 +113,6 @@ class Calculator {
     } else {
       result = this.a || this.prevResult;
     }
-
-    // currentValue.innerText = this.isFraction
-    //   ? result + '.' + (this.fraction || '')
-    //   : result;
 
     currentValue.innerText = result;
     previousValue.innerText = this.error || this.prevResult;
@@ -208,9 +205,6 @@ class Calculator {
 
   // SECTION - Sign Listener
   signListener = (newSign) => {
-    // TODO - Removing last digit of fraction with dot is not working!
-    // FIXME
-
     switch (newSign) {
       case '+':
       case '*':
@@ -265,7 +259,6 @@ class Calculator {
         break;
 
       case '.':
-        console.log(this.isFraction);
         if (this.isFraction) {
           break;
         }
@@ -273,7 +266,6 @@ class Calculator {
         if (!this.isFraction) {
           this.isFraction = true;
         }
-        console.log(this.isFraction);
 
         if (this.isSign() && !this.isB()) {
           this.b = '0';
@@ -283,14 +275,13 @@ class Calculator {
           this.a = '0';
         }
 
-        // NOTE - Put the dot to existed operand
-        // TODO - Check the dot in removeOneDigit() method
+        // NOTE - Putting dot to existed operand
         this.b ? (this.b += '.') : (this.a += '.');
 
         break;
 
       default:
-        throw new Error('signListener error: something went wrong');
+        throw new Error('signListener switch error: DEFAULT CASE CAUSED');
     }
 
     this.refreshResult();
