@@ -70,7 +70,7 @@ class Calculator {
 
   // SECTION - Cut the number
   resultToFixed = (result) => {
-    // NOTE - Input is a number type
+    // NOTE - Input (result) - is a number type
     // FIXME - So dangerous method
     if (Number.isSafeInteger(result)) {
       return (this.prevResult = `${result}`);
