@@ -158,7 +158,7 @@ class Calculator {
       return isCorrectLength(formattedEl) ? formattedEl : operand;
     };
 
-    const setFraction = () => {
+    const setFraction = (operand) => {
       if (this.isSign() && !this.isB()) {
         this.b = '0';
       }
@@ -175,28 +175,28 @@ class Calculator {
           : this.fraction;
       }
 
-      this[currentOperand] = this[currentOperand].replace(/(\d+).*/, '$1');
-      this[currentOperand] += '.' + this.fraction;
-      return this[currentOperand];
+      this[operand] = this[operand].replace(/(\d+).*/, '$1');
+      this[operand] += '.' + this.fraction;
+
+      return this[operand];
     };
 
-    const setOperand = () => {
+    const setOperand = (operand) => {
       // operand = 'a' || 'b'
-      if (isCorrectLength(this[currentOperand])) {
+      if (isCorrectLength(this[operand])) {
         if (this.isCurrentNegative) {
-          this[currentOperand] = setNumber(this[currentOperand]);
+          this[operand] = setNumber(this[operand]);
           this.isCurrentNegative = false;
         } else {
-          this[currentOperand] = setNumber(this[currentOperand]);
+          this[operand] = setNumber(this[operand]);
         }
       }
     };
 
-    console.log(this.isFraction);
     if (this.isFraction) {
-      setFraction();
+      setFraction(currentOperand);
     } else {
-      setOperand();
+      setOperand(currentOperand);
     }
 
     this.refreshResult();
@@ -206,22 +206,17 @@ class Calculator {
   signListener = (newSign) => {
     // TODO - Removing last digit of fraction with dot is not working!
     // FIXME
-    if (this.isFraction) {
-      // this.isB()
-      //   ? (this.b = `${this.b}.${this.fraction}`)
-      //   : (this.a = `${this.a}.${this.fraction}`);
-
-      this.fraction = null;
-      this.isFraction = false;
-      // } else {
-      //   this.isB() ? (this.b = +this.b + '') : (this.a = +this.a + '');
-    }
 
     switch (newSign) {
       case '+':
       case '*':
       case '/':
       case '-':
+        if (this.isFraction) {
+          this.fraction = null;
+          this.isFraction = false;
+        }
+
         if (this.isA() && this.isB()) {
           this.calculate();
           this.a = this.prevResult;
@@ -266,6 +261,7 @@ class Calculator {
         break;
 
       case '.':
+        console.log(this.isFraction);
         if (this.isFraction) {
           break;
         }
@@ -273,6 +269,7 @@ class Calculator {
         if (!this.isFraction) {
           this.isFraction = true;
         }
+        console.log(this.isFraction);
 
         if (this.isSign() && !this.isB()) {
           this.b = '0';
