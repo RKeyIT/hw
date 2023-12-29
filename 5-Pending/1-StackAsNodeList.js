@@ -83,11 +83,11 @@ class Stack {
   }
 
   toArray() {
-    let rootCopy = this.#root;
-
-    if (rootCopy === null) {
+    if (this.#root === null) {
       return null;
     }
+
+    let rootCopy = this.#root;
 
     const array = [];
 
