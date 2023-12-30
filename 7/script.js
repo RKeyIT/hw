@@ -42,7 +42,7 @@ class Calculator {
     this.isFraction = false;
     this.prevResult = '0';
     this.maxInputLength = 10;
-    this.maxFractionLength = 3;
+    this.maxFractionLength = 8;
 
     // possible divide sign ÷
   }
@@ -239,9 +239,7 @@ class Calculator {
           this.a = this.prevResult;
         }
 
-        // FIXME  1.111 => click(+/-) = -1.111 + 0.111 = 1 instead of -1
         this.isB() ? (this.b = `${-+this.b}`) : (this.a = `${-+this.a}`);
-        console.log(this.a, this.b);
         break;
 
       case '->':
