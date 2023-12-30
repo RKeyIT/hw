@@ -66,7 +66,7 @@ class Calculator {
 
     const result = this.operations[this.sign]();
     return this.resetState(this.resultToFixed(result));
-  };
+  }; // !SECTION
 
   // SECTION - Cut the number
   resultToFixed = (result) => {
@@ -90,7 +90,7 @@ class Calculator {
     newResult = `${result}`.replace(/(\.\d*[1-9])0+\b/g, '$1');
 
     return (this.prevResult = newResult);
-  };
+  }; // !SECTION
 
   // SECTION - Reset State
   resetState = (toPrevResult, error) => {
@@ -103,7 +103,7 @@ class Calculator {
     this.fraction = null;
     this.isFraction = false;
     this.refreshResult();
-  };
+  }; // !SECTION
 
   // SECTION - Result Refresher
   refreshResult = () => {
@@ -118,8 +118,9 @@ class Calculator {
     currentValue.innerText = result;
     previousValue.innerText = this.error || this.prevResult;
     mathSign.innerText = this.sign || 'S';
-  };
+  }; // !SECTION
 
+  // SECTION - removeOneDigit method
   removeOneDigit(numString) {
     const preResetNumLength = numString[0] === '-' ? 2 : 1;
 
@@ -132,12 +133,12 @@ class Calculator {
     }
 
     return numString.replace(/(.+).\b/, '$1');
-  }
+  } // !SECTION
 
   // SECTION - Add Listener method
   addHandler(key, handler) {
     this.buttonsObj[key] && handler(this.buttonsObj[key]);
-  }
+  } // !SECTION
 
   // SECTION - Digit Listener
   digitListener = (el) => {
@@ -196,7 +197,7 @@ class Calculator {
     }
 
     this.refreshResult();
-  };
+  }; // !SECTION
 
   // SECTION - Sign Listener
   signListener = (newSign) => {
@@ -281,7 +282,7 @@ class Calculator {
 
       default:
         throw new Error('signListener switch error: DEFAULT CASE CAUSED');
-    }
+    } // !SECTION
 
     this.refreshResult();
   };
@@ -300,7 +301,7 @@ document.body.addEventListener('keydown', (e) => {
   } else {
     calculator.addHandler(e.key, calculator.digitListener);
   }
-});
+}); // !SECTION
 
 // SECTION - Button active class switchers
 document.body.addEventListener('keydown', (e) => {
@@ -318,7 +319,7 @@ document.body.addEventListener('keyup', (e) => {
   }
 
   calculator.addHandler(e.key, removeActiveClass);
-});
+}); // !SECTION
 
 const currentValue = document.getElementById('currentValue');
 currentValue.innerText = calculator.a || '0';
@@ -393,3 +394,4 @@ function renderButtons() {
 }
 
 renderButtons();
+// NOTE - Last string
