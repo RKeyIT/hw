@@ -44,7 +44,7 @@ class Calculator {
     this.maxInputLength = 10;
     this.maxFractionLength = 8;
 
-    // possible divide sign ÷
+    // possible dividing sign ÷
   }
 
   get OPERATIONS() {
