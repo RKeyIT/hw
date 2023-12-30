@@ -26,7 +26,7 @@ class Calculator {
     Enter: '=',
   };
 
-  #operations = {
+  #OPERATIONS = {
     '+': () => +this.a + +this.b,
     '-': () => +this.a - +this.b,
     '*': () => +this.a * +this.b,
@@ -47,9 +47,10 @@ class Calculator {
     // possible divide sign ÷
   }
 
-  get operations() {
-    return this.#operations;
+  get OPERATIONS() {
+    return this.#OPERATIONS;
   }
+
   get buttonsObj() {
     return this.#buttonsObj;
   }
@@ -64,32 +65,31 @@ class Calculator {
       return this.resetState('0', 'Error!');
     }
 
-    const result = this.operations[this.sign]();
-    return this.resetState(this.resultToFixed(result));
+    const operation = this.OPERATIONS[this.sign];
+    const calculated = operation();
+
+    return this.resetState(this.resultToFixed(calculated));
   }; // !SECTION
 
-  // SECTION - Cut the number
-  resultToFixed = (result) => {
-    // NOTE - Input (result) - is a number type
-    // FIXME - So dangerous method
-    if (Number.isSafeInteger(result)) {
-      return (this.prevResult = `${result}`);
+  // SECTION - Cut the number | calculated: number
+  resultToFixed = (calculated) => {
+    if (Number.isSafeInteger(calculated)) {
+      return `${calculated}`;
     }
 
-    const lengthOfNum = `${result}`.length;
-    const dotIndex = `${result}`.includes('.');
-    const countOfNumsAfterDot = lengthOfNum - dotIndex - 1;
-    const isNeedToCut = countOfNumsAfterDot > this.maxFractionLength;
+    const lengthOfNum = `${calculated}`.length;
+    const dotIndex = `${calculated}`.includes('.');
+    const fractionLength = lengthOfNum - dotIndex - 1;
+    const isNeedToCut = fractionLength > this.maxFractionLength;
 
-    let newResult;
     // Handle cases with big fractions as result after 0.1 + 0.2
-    if (isNeedToCut) {
-      newResult = result.toFixed(this.maxFractionLength);
-    }
+    let newResult = isNeedToCut
+      ? calculated.toFixed(this.maxFractionLength)
+      : `${calculated}`;
 
-    newResult = `${result}`.replace(/(\.\d*[1-9])0+\b/g, '$1');
+    newResult = newResult.replace(/(\.\d*[1-9])0+\b/g, '$1');
 
-    return (this.prevResult = newResult);
+    return newResult;
   }; // !SECTION
 
   // SECTION - Reset State
@@ -235,7 +235,7 @@ class Calculator {
         );
 
       case '=':
-        this.isB() && this.calculate();
+        if (this.isB()) this.calculate();
         break;
 
       case '+/-':
