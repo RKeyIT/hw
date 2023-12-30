@@ -26,7 +26,7 @@ class Calculator {
     Enter: '=',
   };
 
-  #OPERATIONS = {
+  #operationsObj = {
     '+': () => +this.a + +this.b,
     '-': () => +this.a - +this.b,
     '*': () => +this.a * +this.b,
@@ -47,8 +47,8 @@ class Calculator {
     // possible dividing sign ÷
   }
 
-  get OPERATIONS() {
-    return this.#OPERATIONS;
+  get operationsObj() {
+    return this.#operationsObj;
   }
 
   get buttonsObj() {
@@ -65,7 +65,7 @@ class Calculator {
       return this.resetState('0', 'Error!');
     }
 
-    const operation = this.OPERATIONS[this.sign];
+    const operation = this.operationsObj[this.sign];
     const calculated = operation();
 
     return this.resetState(this.resultToFixed(calculated));
