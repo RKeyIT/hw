@@ -44,6 +44,24 @@ class Calculator {
     this.maxInputLength = 10;
     this.maxFractionLength = 8;
 
+    // SECTION - Max Result Length task
+    // TODO - Implement max result length logic
+    /*
+      0) Learn "1+e1" notation
+      1) 123456789012345            ->  123456789012345
+      2) 1234567890123451           ->  123456789012+e4
+      3) 123456789.012345           ->  123456789.01235   (rounding to highest)
+      4) 12345678.12345678          ->  12345678.123457   (rounding to highest)
+      5) 12345678.12345478          ->  12345678.123455   (without rounding)
+      6) 123456789012345.12345478   ->  123456789012345   (without rounding)
+      7) 123456789012345.92345478   ->  123456789012346   (rounding to highest)
+      8) 1234567890123.82345478     ->  1234567890123.8   (without rounding)
+      9) 1234567890123.85345478     ->  1234567890123.9   (rounding to highest)
+      10) 1234567890123.95345478    ->  1234567890124     (rounding to highest)
+      */
+    this.maxResultLength = 15;
+    // !SECTION
+
     // possible dividing sign ÷
   }
 
