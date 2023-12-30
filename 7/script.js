@@ -76,17 +76,20 @@ class Calculator {
       return (this.prevResult = `${result}`);
     }
 
-    const countOfNumsAfterDot = `${result}`.length - `${result}`.includes('.');
+    const lengthOfNum = `${result}`.length;
+    const dotIndex = `${result}`.includes('.');
+    const countOfNumsAfterDot = lengthOfNum - dotIndex - 1;
     const isNeedToCut = countOfNumsAfterDot > this.maxFractionLength;
 
+    let newResult;
     // Handle cases with big fractions as result after 0.1 + 0.2
     if (isNeedToCut) {
-      result = result.toFixed(this.maxFractionLength);
+      newResult = result.toFixed(this.maxFractionLength);
     }
 
-    result = `${result}`.replace(/(\.\d*[1-9])0+\b/g, '$1');
+    newResult = `${result}`.replace(/(\.\d*[1-9])0+\b/g, '$1');
 
-    return (this.prevResult = result);
+    return (this.prevResult = newResult);
   };
 
   // SECTION - Reset State
