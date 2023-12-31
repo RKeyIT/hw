@@ -122,12 +122,12 @@ class Calculator {
 
     // Handle cases with big fractions as result after 0.1 + 0.2
     let newResult = isNeedToCut
-      ? calculated.toFixed(this.maxFractionLength)
-      : `${calculated}`;
+      ? parseFloat(calculated.toFixed(this.maxFractionLength))
+      : parseFloat(calculated);
 
-    newResult = newResult.replace(/(\.\d*[1-9])0+\b/g, '$1');
+    // newResult = newResult.replace(/(\.\d*[1-9])0+\b/g, '$1');
 
-    return newResult;
+    return String(newResult);
   }; // !SECTION
 
   // SECTION - Reset State
