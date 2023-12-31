@@ -47,18 +47,20 @@ class Calculator {
     // SECTION - Max Result Length task
     // TODO - Implement max result length logic
     /*
-      0) Learn "1+e1" notation
-      1) 123456789012345            ->  123456789012345
-      2) 1234567890123451           ->  123456789012+e4
-      3) 123456789.012345           ->  123456789.01235   (rounding to highest)
-      4) 12345678.12345678          ->  12345678.123457   (rounding to highest)
-      5) 12345678.12345478          ->  12345678.123455   (without rounding)
-      6) 123456789012345.12345478   ->  123456789012345   (without rounding)
-      7) 123456789012345.92345478   ->  123456789012346   (rounding to highest)
-      8) 1234567890123.82345478     ->  1234567890123.8   (without rounding)
-      9) 1234567890123.85345478     ->  1234567890123.9   (rounding to highest)
-      10) 1234567890123.95345478    ->  1234567890124     (rounding to highest)
+      0) Learn "1.00000000E+1" notation
+      1) 123456789012345           ->  123456789012345
+      2) 1234567890123451          ->  1.234567890123451e+15
+      3) 123456789.012345          ->  1.2345678901235e+8
+      4) 12345678.12345678         ->  1.2345678123457e+7
+      5) 12345678.12345478         ->  1.2345678123455e+7
+      6) 123456789012345.12345478  ->  1.23456789012345e+14
+      7) 123456789012345.92345478  ->  1.23456789012346e+14
+      8) 1234567890123.82345478    ->  1.2345678901238e+12
+      9) 1234567890123.85345478    ->  1.2345678901239e+12
+      10) 1234567890123.95345478    ->  1.234567890124e+12
       */
+    this.bigResult = null;
+    this.bigExponent = null;
     this.maxResultLength = 15;
     // !SECTION
 
@@ -84,10 +86,26 @@ class Calculator {
     }
 
     const operation = this.operationsObj[this.sign];
-    const calculated = operation();
+    const calculated = this.resultToFixed(operation());
 
-    return this.resetState(this.resultToFixed(calculated));
+    return this.resetState(calculated);
   }; // !SECTION
+
+  // SECTION - create big num notation
+  createBigNum(bigNum) {
+    let bigNumCopy = bigNum;
+    let exponent = 0;
+
+    if (`${bigNumCopy}`.includes('.') >= this.maxResultLength) {
+      bigNumCopy = bigNumCopy.round();
+      this.resetFraction();
+    }
+
+    while (bigNumCopy > 10) {
+      bigNumCopy /= 10;
+      exponent++;
+    }
+  } // !SECTION
 
   // SECTION - Cut the number | calculated: number
   resultToFixed = (calculated) => {
