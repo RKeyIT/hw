@@ -167,9 +167,12 @@ class Calculator {
 
     if (numString.length <= preResetNumLength) return '0';
 
-    if (numString[numString.length - 2] === '.') {
+    if (
+      numString[numString.length - 1] === '.' ||
+      numString[numString.length - 2] === '.'
+    ) {
       this.resetFraction();
-      return numString.replace(/(\d+)\.\d/, '$1');
+      return numString.replace(/(\d+)\.\d|\./, '$1');
     }
 
     return numString.replace(/(.+).\b/, '$1');
