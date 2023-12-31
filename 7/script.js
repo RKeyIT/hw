@@ -1,6 +1,8 @@
 class Calculator {
   // TODO - Make every field as private if it should be private
 
+  // TODO - Repeat previous operation functionallity on '=' use
+
   #buttonsObj = {
     0: '0',
     1: '1',
