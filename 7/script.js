@@ -118,9 +118,14 @@ class Calculator {
     this.b = null;
     this.sign = null;
     this.error = error || null;
+    this.resetFraction();
+    this.refreshResult();
+  }; // !SECTION
+
+  // SECTION - Reset Fraction
+  resetFraction = () => {
     this.fraction = null;
     this.isFraction = false;
-    this.refreshResult();
   }; // !SECTION
 
   // SECTION - Result Refresher
@@ -145,8 +150,7 @@ class Calculator {
     if (numString.length <= preResetNumLength) return '0';
 
     if (numString[numString.length - 2] === '.') {
-      this.fraction = null;
-      this.isFraction = false;
+      this.resetFraction();
       return numString.replace(/(\d+)\.\d/, '$1');
     }
 
@@ -225,8 +229,7 @@ class Calculator {
       case '/':
       case '-':
         if (this.isFraction) {
-          this.fraction = null;
-          this.isFraction = false;
+          this.resetFraction();
         }
 
         if (this.isA() && this.isB()) {
