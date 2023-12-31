@@ -90,24 +90,43 @@ class Calculator {
     const operation = this.operationsObj[this.sign];
     const calculated = this.resultToFixed(operation());
 
+    if (`${calculated}`.length > this.maxResultLength) {
+      return this.resetState(this.handleBigNum(calculated));
+    }
+
     return this.resetState(calculated);
   }; // !SECTION
 
-  // SECTION - create big num notation
-  createBigNum(bigNum) {
-    let bigNumCopy = bigNum;
-    let exponent = 0;
+  // SECTION - handle big num notation
+  handleBigNum = (bigNumString) => {
+    let isDecOutOfLength;
+    let decreasableLength;
+    if (bigNumString.indexOf('.') + 1) {
+      isDecOutOfLength = bigNumString.indexOf('.') + 1 >= this.maxResultLength;
+      decreasableLength = this.maxResultLength - bigNumString.indexOf('.') + 1;
+    }
 
-    if (`${bigNumCopy}`.includes('.') >= this.maxResultLength) {
-      bigNumCopy = bigNumCopy.round();
+    // CASE 1: If decreasing of decimal part can save the normal number
+    if (decreasableLength > 1) {
+      console.log(decreasableLength);
+      return String(parseFloat(bigNumString).toFixed(decreasableLength));
+    }
+
+    // CASE 2: Decimal dot on or out of max bound value
+    if (isDecOutOfLength) {
+      bigNumString = +bigNumString.round();
       this.resetFraction();
     }
 
-    while (bigNumCopy > 10) {
-      bigNumCopy /= 10;
-      exponent++;
+    // CASE 3: Number length is out of max result length
+    if (bigNumString.length > this.maxResultLength) {
+      bigNumString = parseFloat(bigNumString).toExponential(
+        this.maxFractionLength
+      );
     }
-  } // !SECTION
+
+    return String(bigNumString);
+  }; // !SECTION
 
   // SECTION - Cut the number | calculated: number
   resultToFixed = (calculated) => {
@@ -116,7 +135,7 @@ class Calculator {
     }
 
     const lengthOfNum = `${calculated}`.length;
-    const dotIndex = `${calculated}`.includes('.');
+    const dotIndex = `${calculated}`.indexOf('.');
     const fractionLength = lengthOfNum - dotIndex - 1;
     const isNeedToCut = fractionLength > this.maxFractionLength;
 
