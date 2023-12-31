@@ -61,9 +61,6 @@ class Calculator {
       9) 1234567890123.85345478    ->  1.2345678901239e+12
       10) 1234567890123.95345478    ->  1.234567890124e+12
       */
-    this.bigResult = null;
-    this.bigExponent = null;
-    this.maxResultLength = 15;
     // !SECTION
 
     // possible dividing sign ÷
