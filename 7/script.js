@@ -31,10 +31,10 @@ class Calculator {
   };
 
   #operationsObj = {
-    '+': () => +this.a + +this.b,
-    '-': () => +this.a - +this.b,
-    '*': () => +this.a * +this.b,
-    '/': () => +this.a / +this.b,
+    '+': () => String(+this.a + +this.b),
+    '-': () => String(+this.a - +this.b),
+    '*': () => String(+this.a * +this.b),
+    '/': () => String(+this.a / +this.b),
   };
 
   constructor() {
@@ -127,23 +127,21 @@ class Calculator {
     return String(bigNumString);
   }; // !SECTION
 
-  // SECTION - Cut the number | calculated: number
+  // SECTION - Cut the number | calculated: string
   resultToFixed = (calculated) => {
     if (Number.isSafeInteger(calculated)) {
-      return `${calculated}`;
+      return calculated;
     }
 
-    const lengthOfNum = `${calculated}`.length;
-    const dotIndex = `${calculated}`.indexOf('.');
+    const lengthOfNum = calculated.length;
+    const dotIndex = calculated.indexOf('.');
     const fractionLength = lengthOfNum - dotIndex - 1;
     const isNeedToCut = fractionLength > this.maxFractionLength;
 
     // Handle cases with big fractions as result after 0.1 + 0.2
     let newResult = isNeedToCut
-      ? parseFloat(calculated.toFixed(this.maxFractionLength))
+      ? parseFloat(Number(calculated).toFixed(this.maxFractionLength))
       : parseFloat(calculated);
-
-    // newResult = newResult.replace(/(\.\d*[1-9])0+\b/g, '$1');
 
     return String(newResult);
   }; // !SECTION
