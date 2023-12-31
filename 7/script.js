@@ -123,20 +123,17 @@ class Calculator {
 
     // CASE 2: Decimal dot on or out of max bound value
     if (isDecOutOfLength) {
-      console.log('CASE 2');
       bigNumString = +bigNumString.round();
       this.resetFraction();
     }
 
     // CASE 3: Number length is out of max result length
     if (bigNumString.length > this.maxResultLength) {
-      console.log('CASE 3');
       bigNumString = parseInt(bigNumString).toExponential(
         this.maxFractionLength
       );
     }
 
-    console.log('pre return', bigNumString);
     return String(bigNumString);
   }; // !SECTION
 
@@ -282,6 +279,10 @@ class Calculator {
       case '-':
         if (this.isFraction) {
           this.resetFraction();
+        }
+
+        if (this.error) {
+          this.error = null;
         }
 
         if (this.isA() && this.isB()) {
