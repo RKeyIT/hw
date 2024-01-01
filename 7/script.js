@@ -48,25 +48,6 @@ class Calculator {
     this.maxInputLength = 10;
     this.maxResultLength = 15;
     this.maxFractionLength = 8;
-
-    // SECTION - Max Result Length task
-    // TODO - Implement max result length logic
-    /*
-      0) Learn "1.00000000E+1" notation
-      1) 123456789012345           ->  123456789012345
-      2) 1234567890123451          ->  1.234567890e+15
-      3) 123456789.012345          ->  123456789.01235      (rounded)
-      4) 12345678.12345674         ->  12345678.123457
-      5) 12345678.12345478         ->  12345678.123458      (rounded)
-      6) 123456789012345.12345478  ->  1.234567890e+14
-      7) 123456789092345.92345478  ->  1.234567891e+14      (rounded)
-      8) 1234567890123.82345478    ->  1.2345678901238e+12
-      9) 1234567890123.85345478    ->  1.2345678901239e+12
-      10) 1234567890123.95345478   ->  1.234567890124e+12
-      */
-    // !SECTION
-
-    // possible dividing sign ÷
   }
 
   get operationsObj() {
@@ -94,6 +75,7 @@ class Calculator {
 
     if (isUnsafeResultLength) {
       const bigNum = this.handleBigNum(calculated);
+      console.log(bigNum);
 
       return bigNum === '0'
         ? this.resetState(bigNum, 'Error: Too big number!')
@@ -107,13 +89,15 @@ class Calculator {
   handleBigNum = (bigNumString) => {
     let isDecOutOfLength;
     let decreasableLength;
+    let dotPosition;
     if (bigNumString.indexOf('.') + 1) {
-      isDecOutOfLength = bigNumString.indexOf('.') + 1 >= this.maxResultLength;
-      decreasableLength = this.maxResultLength - bigNumString.indexOf('.') + 1;
+      dotPosition = bigNumString.indexOf('.') + 1;
+      isDecOutOfLength = dotPosition >= this.maxResultLength;
+      decreasableLength = this.maxResultLength - dotPosition;
     }
 
     // CASE 1: If decreasing of decimal part can save the normal number
-    if (decreasableLength) {
+    if (decreasableLength > 1) {
       // CASE 4: Too big number -> resetState with error
       if (bigNumString.indexOf('.') === 1) {
         return '0';
