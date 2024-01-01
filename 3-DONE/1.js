@@ -19,7 +19,7 @@ Array.prototype.myFilter = function (callback, thisArg = this) {
   for (let i = 0; i < thisArg.length; i++) {
     const result = callback(thisArg[i], i, thisArg);
 
-    if (result == true) {
+    if (result) {
       filteredArray.push(thisArg[i]);
     }
   }
