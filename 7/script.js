@@ -292,7 +292,9 @@ class Calculator {
           this.#resetFraction();
         }
 
-        if (this.#error) {
+        if (this.#error && !this.#isA()) {
+          break;
+        } else {
           this.#error = null;
         }
 
