@@ -50,7 +50,7 @@ body {
     box-sizing: border-box;
     border: 2px inset var(--black);
     font-weight: bold;
-    height: 2.5em;
+    height: 3.2em;
     display: flex;
     padding: 0 .5em;
     align-items: center;
