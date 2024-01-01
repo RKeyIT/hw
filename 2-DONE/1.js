@@ -20,9 +20,11 @@ function makeObjectDeepCopy(object) {
 
   if (getType(object) === 'object') {
     const copy = {};
+
     for (const key in object) {
       copy[key] = makeObjectDeepCopy(object[key]);
     }
+
     return copy;
   }
 

@@ -3,7 +3,7 @@ const myIterable = {
   to: 4,
   [Symbol.iterator]() {
     let from = this.from;
-    let to = this.to;
+    const to = this.to;
 
     if (!Number.isSafeInteger(from) || !Number.isSafeInteger(to) || to < from) {
       throw new Error('Некорректные значения from и to');
@@ -16,9 +16,9 @@ const myIterable = {
             value: from++,
             done: false,
           };
-        } else {
-          return { done: true };
         }
+
+        return { done: true };
       },
     };
   },

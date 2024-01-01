@@ -2,18 +2,18 @@ function isCorrectData(array, firstIndex, secondIndex) {
   return (
     Number.isSafeInteger(firstIndex) &&
     Number.isSafeInteger(secondIndex) &&
-    array.prototype === [].prototype &&
+    Array.isArray(array) &&
     array.every(Number.isSafeInteger)
   );
 }
 
 function selectFromInterval(array, firstIndex, secondIndex) {
   if (!isCorrectData(...arguments)) {
-    throw new Error('Ошибка!');
+    throw new Error('Ошибка! Переданы некорректные аргументы');
   }
 
-  let min = firstIndex <= secondIndex ? firstIndex : secondIndex;
-  let max = min === firstIndex ? secondIndex : firstIndex;
+  const min = firstIndex <= secondIndex ? firstIndex : secondIndex;
+  const max = min === firstIndex ? secondIndex : firstIndex;
 
   return array.slice(min - 1, max);
 }

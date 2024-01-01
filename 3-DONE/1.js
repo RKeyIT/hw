@@ -10,6 +10,10 @@ Callback-функция, переданная в качестве парамет
 */
 
 Array.prototype.myFilter = function (callback, thisArg = this) {
+  if (typeof callback !== 'function') {
+    throw new Error('callback argument is not a function');
+  }
+
   const filteredArray = [];
 
   for (let i = 0; i < thisArg.length; i++) {
