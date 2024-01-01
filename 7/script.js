@@ -165,7 +165,7 @@ class Calculator {
     let result;
 
     if (this.#isSign()) {
-      result = this.#isB() ? `${this.b}` : `${this.sign}`;
+      result = this.#isB() ? this.b : this.sign;
     } else {
       result = this.a || this.prevResult;
     }
@@ -201,9 +201,9 @@ class Calculator {
   digitListener = (el) => {
     const currentOperand = this.#isSign() ? 'b' : 'a';
 
-    const isCorrectLength = (num) => `${num}`.length <= this.maxInputLength;
+    const isCorrectLength = (num) => num.length <= this.maxInputLength;
     const isCorrectFractionLength = (num) =>
-      `${num}`.length < this.maxFractionLength;
+      num.length < this.maxFractionLength;
 
     const setNumber = (operand) => {
       if (operand === '0' && el === '0') return operand;
@@ -242,7 +242,7 @@ class Calculator {
 
     const setOperand = (operand) => {
       // operand = 'a' || 'b'
-      if (isCorrectLength(this[operand])) {
+      if (this[operand] === null || isCorrectLength(this[operand])) {
         this[operand] = setNumber(this[operand]);
       }
     };
@@ -291,7 +291,7 @@ class Calculator {
         }
 
         throw new Error(
-          'signListener: switch-case (+-*/): Something went wrong!'
+          'signListener: switch-case (+-*/): Every of conditions were falsely!'
         );
 
       case '=':
