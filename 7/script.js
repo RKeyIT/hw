@@ -1,7 +1,5 @@
 // SECTION Calculator class
 class Calculator {
-  // TODO - Make every field as private if it should be private
-
   // TODO - Repeat previous operation functionallity on '=' use
 
   #buttonsObj = {
@@ -38,17 +36,37 @@ class Calculator {
     '/': () => String(+this.a / +this.b),
   };
 
+  #a = null;
+  #b = null;
+  #sign = null;
+  #error = null;
+  #fraction = null;
+  #isFraction = false;
+  #prevResult = '0';
+  #maxInputLength;
+  #maxResultLength;
+  #maxFractionLength;
+
   constructor(maxInputLength = 10, maxFractLength = 8, maxResLength = 15) {
-    this.a = null;
-    this.b = null;
-    this.sign = null;
-    this.error = null;
-    this.fraction = null;
-    this.isFraction = false;
-    this.prevResult = '0';
-    this.maxInputLength = maxInputLength;
-    this.maxResultLength = maxResLength;
-    this.maxFractionLength = maxFractLength;
+    this.#maxInputLength = maxInputLength;
+    this.#maxResultLength = maxResLength;
+    this.#maxFractionLength = maxFractLength;
+  }
+
+  get a() {
+    return this.#a;
+  }
+
+  set a(value) {
+    this.#a = value;
+  }
+
+  get b() {
+    return this.#b;
+  }
+
+  set b(value) {
+    this.#b = value;
   }
 
   get operationsObj() {
@@ -61,22 +79,21 @@ class Calculator {
 
   #isA = () => this.a !== null;
   #isB = () => this.b !== null;
-  #isSign = () => this.sign !== null;
+  #isSign = () => this.#sign !== null;
 
   // SECTION - Calculate
   #calculate = () => {
-    if (this.sign === '/' && this.b === '0') {
+    if (this.#sign === '/' && this.b === '0') {
       return this.#resetState('0', "Error: Can't devide by zero!");
     }
 
-    const operation = this.operationsObj[this.sign];
+    const operation = this.operationsObj[this.#sign];
     const calculated = this.#resultToFixed(operation());
 
-    const isUnsafeResultLength = calculated.length > this.maxResultLength;
+    const isUnsafeResultLength = calculated.length > this.#maxResultLength;
 
     if (isUnsafeResultLength) {
       const bigNum = this.#handleBigNum(calculated);
-      console.log(bigNum);
 
       return bigNum === '0'
         ? this.#resetState(bigNum, 'Error: Too big number!')
@@ -94,8 +111,8 @@ class Calculator {
 
     if (bigNumString.indexOf('.') + 1) {
       dotPosition = bigNumString.indexOf('.') + 1;
-      isDecOutOfLength = dotPosition >= this.maxResultLength;
-      decreasableLength = this.maxResultLength - dotPosition;
+      isDecOutOfLength = dotPosition >= this.#maxResultLength;
+      decreasableLength = this.#maxResultLength - dotPosition;
     }
 
     // CASE 1: If decreasing of decimal part can save the normal number
@@ -114,16 +131,16 @@ class Calculator {
     }
 
     // CASE 3: Number length is out of max result length
-    if (bigNumString.length > this.maxResultLength) {
+    if (bigNumString.length > this.#maxResultLength) {
       bigNumString = parseInt(bigNumString).toExponential(
-        this.maxFractionLength
+        this.#maxFractionLength
       );
     }
 
     return String(bigNumString);
   }; // !SECTION
 
-  // SECTION - Cut the number | calculated: string
+  // SECTION - Cut the number
   #resultToFixed = (calculated) => {
     if (Number.isSafeInteger(calculated)) {
       return calculated;
@@ -132,11 +149,11 @@ class Calculator {
     const lengthOfNum = calculated.length;
     const dotIndex = calculated.indexOf('.');
     const fractionLength = lengthOfNum - dotIndex - 1;
-    const isNeedToCut = fractionLength > this.maxFractionLength;
+    const isNeedToCut = fractionLength > this.#maxFractionLength;
 
     // Handle cases with big fractions as result after 0.1 + 0.2
     let newResult = isNeedToCut
-      ? parseFloat(Number(calculated).toFixed(this.maxFractionLength))
+      ? parseFloat(Number(calculated).toFixed(this.#maxFractionLength))
       : parseFloat(calculated);
 
     return String(newResult);
@@ -144,20 +161,20 @@ class Calculator {
 
   // SECTION - Reset State
   #resetState = (toPrevResult, error) => {
-    this.prevResult = toPrevResult || '0';
+    this.#prevResult = toPrevResult || '0';
 
     this.a = null;
     this.b = null;
-    this.sign = null;
-    this.error = error || null;
+    this.#sign = null;
+    this.#error = error || null;
     this.#resetFraction();
     this.#refreshResult();
   }; // !SECTION
 
   // SECTION - Reset Fraction
   #resetFraction = () => {
-    this.fraction = null;
-    this.isFraction = false;
+    this.#fraction = null;
+    this.#isFraction = false;
   }; // !SECTION
 
   // SECTION - Result Refresher
@@ -165,14 +182,14 @@ class Calculator {
     let result;
 
     if (this.#isSign()) {
-      result = this.#isB() ? this.b : this.sign;
+      result = this.#isB() ? this.b : this.#sign;
     } else {
-      result = this.a || this.prevResult;
+      result = this.a || this.#prevResult;
     }
 
     currentValue.innerText = result;
-    previousValue.innerText = this.error || this.prevResult;
-    mathSign.innerText = this.sign || 'S';
+    previousValue.innerText = this.#error || this.#prevResult;
+    mathSign.innerText = this.#sign || 'S';
   }; // !SECTION
 
   // SECTION - #removeOneDigit method
@@ -194,16 +211,16 @@ class Calculator {
 
   // SECTION - Add Listener method
   addHandlerOnBtn = (key, handler) => {
-    this.buttonsObj[key] && handler(this.buttonsObj[key]);
+    this.#buttonsObj[key] && handler(this.#buttonsObj[key]);
   }; // !SECTION
 
   // SECTION - Digit Listener
   digitListener = (el) => {
     const currentOperand = this.#isSign() ? 'b' : 'a';
 
-    const isCorrectLength = (num) => num.length <= this.maxInputLength;
+    const isCorrectLength = (num) => num.length <= this.#maxInputLength;
     const isCorrectFractionLength = (num) =>
-      num.length < this.maxFractionLength;
+      num.length < this.#maxFractionLength;
 
     const setNumber = (operand) => {
       if (operand === '0' && el === '0') return operand;
@@ -226,16 +243,16 @@ class Calculator {
         this.a = '0';
       }
 
-      if (this.fraction === null) {
-        this.fraction = el;
+      if (this.#fraction === null) {
+        this.#fraction = el;
       } else {
-        this.fraction = isCorrectFractionLength(this.fraction)
-          ? this.fraction + el
-          : this.fraction;
+        this.#fraction = isCorrectFractionLength(this.#fraction)
+          ? this.#fraction + el
+          : this.#fraction;
       }
 
       this[operand] = this[operand].replace(/(\d+).*/, '$1');
-      this[operand] += '.' + this.fraction;
+      this[operand] += '.' + this.#fraction;
 
       return this[operand];
     };
@@ -247,7 +264,7 @@ class Calculator {
       }
     };
 
-    if (this.isFraction) {
+    if (this.#isFraction) {
       setFraction(currentOperand);
     } else {
       setOperand(currentOperand);
@@ -263,30 +280,30 @@ class Calculator {
       case '*':
       case '/':
       case '-':
-        if (this.isFraction) {
+        if (this.#isFraction) {
           this.#resetFraction();
         }
 
-        if (this.error) {
-          this.error = null;
+        if (this.#error) {
+          this.#error = null;
         }
 
         if (this.#isA() && this.#isB()) {
           this.#calculate();
-          this.a = this.prevResult;
-          this.sign = newSign;
+          this.a = this.#prevResult;
+          this.#sign = newSign;
           break;
         }
 
         if (this.#isA() && !this.#isB()) {
-          this.prevResult = this.a;
-          this.sign = newSign;
+          this.#prevResult = this.a;
+          this.#sign = newSign;
           break;
         }
 
         if (!this.#isA()) {
-          this.a = this.prevResult;
-          this.sign = newSign;
+          this.a = this.#prevResult;
+          this.#sign = newSign;
           break;
         }
 
@@ -300,7 +317,7 @@ class Calculator {
 
       case '+/-':
         if (!this.#isA()) {
-          this.a = this.prevResult;
+          this.a = this.#prevResult;
         }
 
         this.#isB() ? (this.b = `${-+this.b}`) : (this.a = `${-+this.a}`);
@@ -311,7 +328,7 @@ class Calculator {
           ? (this.b = this.#removeOneDigit(this.b))
           : this.#isA()
           ? (this.a = this.#removeOneDigit(this.a))
-          : (this.a = this.#removeOneDigit(this.prevResult));
+          : (this.a = this.#removeOneDigit(this.#prevResult));
         break;
 
       case 'C':
@@ -319,12 +336,12 @@ class Calculator {
         break;
 
       case '.':
-        if (this.isFraction) {
+        if (this.#isFraction) {
           break;
         }
 
-        if (!this.isFraction) {
-          this.isFraction = true;
+        if (!this.#isFraction) {
+          this.#isFraction = true;
         }
 
         if (this.#isSign() && !this.#isB()) {
