@@ -1,7 +1,5 @@
 // SECTION Calculator class
 class Calculator {
-  // TODO - Repeat previous operation functionallity on '=' use
-
   #buttonsObj = {
     0: '0',
     1: '1',
@@ -41,6 +39,7 @@ class Calculator {
   #sign = null;
   #error = null;
   #fraction = null;
+  #prevOperation = null; // NOTE - it is an array of type [prevSign, prevB] || null
   #isFraction = false;
   #prevResult = '0';
   #maxInputLength;
@@ -67,6 +66,14 @@ class Calculator {
 
   set b(value) {
     this.#b = value;
+  }
+
+  get prevOperation() {
+    return this.#prevOperation;
+  }
+
+  set prevOperation(arrOrNull) {
+    this.#prevOperation = arrOrNull;
   }
 
   get operationsObj() {
@@ -97,10 +104,44 @@ class Calculator {
 
       return bigNum === '0'
         ? this.#resetState(bigNum, 'Error: Too big number!')
-        : this.#resetState(bigNum);
+        : this.#resetState(bigNum, null, [this.#sign, this.b]);
     }
 
-    return this.#resetState(calculated);
+    return this.#resetState(calculated, null, [this.#sign, this.b]);
+  }; // !SECTION
+
+  // SECTION - Reset State
+  #resetState = (toPrevResult = '0', error = null, prevOperation = null) => {
+    this.#prevResult = toPrevResult;
+    this.prevOperation = prevOperation;
+
+    this.a = null;
+    this.b = null;
+    this.#sign = null;
+    this.#error = error;
+    this.#resetFraction();
+    this.#refreshResult();
+  }; // !SECTION
+
+  // SECTION - Reset Fraction
+  #resetFraction = () => {
+    this.#fraction = null;
+    this.#isFraction = false;
+  }; // !SECTION
+
+  // SECTION - Result Refresher
+  #refreshResult = () => {
+    let result;
+
+    if (this.#isSign()) {
+      result = this.#isB() ? this.b : this.#sign;
+    } else {
+      result = this.a || this.#prevResult;
+    }
+
+    currentValue.innerText = result;
+    previousValue.innerText = this.#error || this.#prevResult;
+    mathSign.innerText = this.#sign || 'S';
   }; // !SECTION
 
   // SECTION - handle big num notation
@@ -157,39 +198,6 @@ class Calculator {
       : parseFloat(calculated);
 
     return String(newResult);
-  }; // !SECTION
-
-  // SECTION - Reset State
-  #resetState = (toPrevResult, error) => {
-    this.#prevResult = toPrevResult || '0';
-
-    this.a = null;
-    this.b = null;
-    this.#sign = null;
-    this.#error = error || null;
-    this.#resetFraction();
-    this.#refreshResult();
-  }; // !SECTION
-
-  // SECTION - Reset Fraction
-  #resetFraction = () => {
-    this.#fraction = null;
-    this.#isFraction = false;
-  }; // !SECTION
-
-  // SECTION - Result Refresher
-  #refreshResult = () => {
-    let result;
-
-    if (this.#isSign()) {
-      result = this.#isB() ? this.b : this.#sign;
-    } else {
-      result = this.a || this.#prevResult;
-    }
-
-    currentValue.innerText = result;
-    previousValue.innerText = this.#error || this.#prevResult;
-    mathSign.innerText = this.#sign || 'S';
   }; // !SECTION
 
   // SECTION - #removeOneDigit method
@@ -312,8 +320,18 @@ class Calculator {
         );
 
       case '=':
-        if (this.#isB()) this.#calculate();
-        break;
+        if (this.#isB()) {
+          this.#calculate();
+          break;
+        }
+
+        if (this.prevOperation) {
+          this.a = this.#prevResult;
+          this.#sign = this.prevOperation[0];
+          this.b = this.prevOperation[1];
+          this.#calculate();
+          break;
+        }
 
       case '+/-':
         if (!this.#isA()) {
