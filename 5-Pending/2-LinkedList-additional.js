@@ -19,7 +19,7 @@ class LinkedList {
   rootNode;
 
   static fromIterable(iterable) {
-    if (!iterable.length && iterable.length !== 0) {
+    if (!iterable[Symbol.iterator]) {
       throw new Error('Передана не итерируемая сущность');
     }
 
@@ -43,10 +43,8 @@ class LinkedList {
   append(elem) {
     if (!this.rootNode) {
       this.rootNode = new Node(elem);
-    } else if (this.rootNode.next === null) {
-      this.rootNode.next = new Node(elem);
     } else {
-      this.#findAndSetLastNode(this.rootNode.next, elem);
+      this.#findAndSetLastNode(this.rootNode, elem);
     }
   }
 
@@ -70,10 +68,10 @@ class LinkedList {
     let currentNode = this.rootNode;
 
     while (currentNode.next !== null) {
-      console.log(currentNode.next);
       if (currentNode.next.value === elem) {
         return currentNode.next;
       }
+
       currentNode = currentNode.next;
     }
 
@@ -117,3 +115,4 @@ const array = list.toArray();
 console.log(array);
 
 console.log(LinkedList.fromIterable([5]));
+console.log(list.find(3));

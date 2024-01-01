@@ -96,7 +96,6 @@ class Calculator {
 
     const operation = this.operationsObj[this.#sign];
     const calculated = this.#resultToFixed(operation());
-
     const isUnsafeResultLength = calculated.length > this.#maxResultLength;
 
     if (isUnsafeResultLength) {
@@ -114,7 +113,6 @@ class Calculator {
   #resetState = (toPrevResult = '0', error = null, prevOperation = null) => {
     this.#prevResult = toPrevResult;
     this.prevOperation = prevOperation;
-
     this.a = null;
     this.b = null;
     this.#sign = null;
@@ -162,6 +160,7 @@ class Calculator {
       if (bigNumString.indexOf('.') === 1) {
         return '0';
       }
+
       return String(parseFloat(bigNumString).toFixed(decreasableLength));
     }
 
@@ -204,7 +203,9 @@ class Calculator {
   #removeOneDigit = (numString) => {
     const preResetNumLength = numString[0] === '-' ? 2 : 1;
 
-    if (numString.length <= preResetNumLength) return '0';
+    if (numString.length <= preResetNumLength) {
+      return '0';
+    }
 
     if (
       numString[numString.length - 1] === '.' ||
@@ -482,6 +483,7 @@ function renderButtons() {
   for (let i = 0; i < UIDigits.length; i++) {
     buttonsContainer.appendChild(UIDigits[i]);
   }
+
   for (let i = 0; i < UIOps.length; i++) {
     buttonsContainer.appendChild(UIOps[i]);
   }

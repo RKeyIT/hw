@@ -95,6 +95,7 @@ class Car {
   get model() {
     return this.#model;
   }
+
   set model(name) {
     if (name.length < 1 || name.length > 50) {
       throw new Error('Длинна названия модели должна быть от 1 до 50 знаков');
@@ -107,6 +108,7 @@ class Car {
   get yearOfManufacturing() {
     return this.#yearOfManufacturing;
   }
+
   set yearOfManufacturing(year) {
     if (year < 1900 || year > new Date().getFullYear()) {
       throw new Error('Неверный год производства');
@@ -119,6 +121,7 @@ class Car {
   get maxSpeed() {
     return this.#maxSpeed;
   }
+
   set maxSpeed(speed) {
     if (speed < 100 || speed > 300) {
       throw new Error(
@@ -133,6 +136,7 @@ class Car {
   get maxFuelVolume() {
     return this.#maxFuelVolume;
   }
+
   set maxFuelVolume(volume) {
     if (volume < 5 || volume > 20) {
       throw new Error('Максимальный объём топлива от 5 до 20 литров');
@@ -145,6 +149,7 @@ class Car {
   get fuelConsumption() {
     return this.#fuelConsumption;
   }
+
   set fuelConsumption(consumption) {
     this.#fuelConsumption = consumption / 100;
   }

@@ -62,6 +62,7 @@ class Stack {
     if (this.#nodeCounter >= this.maxLength) {
       throw new Error('Стек переполнен!');
     }
+
     this.#nodeCounter++;
     this.#root = new Node(element, this.#root);
   }

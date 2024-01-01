@@ -48,12 +48,14 @@ function concatStrings(string, separator) {
 const wordConcatinator = concatStrings('a', 'WORD');
 const slashConcatinator = concatStrings('a', '/');
 const emptyStringConcatinator = concatStrings('a', ' ');
+const nullStringConcatinator = concatStrings('a', '');
 const nullConcatinator = concatStrings('a', null);
 const zeroConcatinator = concatStrings('a', 0);
 const separatorlessConcatinator = concatStrings('a');
 console.log(wordConcatinator('b')('c')('d')('e')());
 console.log(slashConcatinator('b')('c')('d')('e')());
 console.log(emptyStringConcatinator('b')('c')('d')('e')());
+console.log(nullStringConcatinator('b')('c')('d')('e')());
 console.log(nullConcatinator('b')('c')('d')('e')());
 console.log(zeroConcatinator('b')('c')('d')('e')());
 console.log(separatorlessConcatinator('b')('c')('d')('e')());

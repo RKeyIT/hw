@@ -47,7 +47,7 @@ class Stack {
   }
 
   static fromIterable(iterable) {
-    if (iterable.length === undefined) {
+    if (!iterable[Symbol.iterator]) {
       throw new Error('Полученая сущность не является итерируемой');
     }
 
