@@ -83,6 +83,7 @@ class Car {
   get brand() {
     return this.#brand;
   }
+
   set brand(name) {
     if (name.length < 1 || name.length > 50) {
       throw new Error('Длинна названия бренда должна быть от 1 до 50 знаков');
@@ -183,6 +184,7 @@ class Car {
 
     this.#isStarted = false;
   }
+
   fillUpGasTank(liters) {
     if (!Number.isSafeInteger(liters) || liters <= 0) {
       throw new Error('Неверное количество топлива для заправки');
@@ -194,6 +196,7 @@ class Car {
 
     this.#currentFuelVolume += liters;
   }
+
   drive(speed, hours) {
     if (this.#isCanDrive(speed, hours)) {
       this.#currentFuelVolume -= speed * hours * this.fuelConsumption;
@@ -236,5 +239,6 @@ car.start();
 car.drive(100, 8.3);
 // car.shutDownEngine();
 car.drive(100, 0.2);
+
 console.log(car.currentFuelVolume);
 console.log(car.mileage);

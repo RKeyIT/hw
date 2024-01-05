@@ -111,11 +111,13 @@ class Node {
 
 const a = Stack.fromIterable([1, 2, 3]);
 const b = a.toArray();
+
 console.log(a);
 console.log(a.peek());
 console.log(b);
 
 const stack = new Stack(5);
+
 stack.push(1);
 stack.push(2);
 stack.push(3);
@@ -123,6 +125,7 @@ stack.push(4);
 stack.push(5);
 
 const stackArray = stack.toArray();
+
 console.log(stackArray);
 console.log(stack.pop());
 // stack.push(6); // Error
