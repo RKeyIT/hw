@@ -1,5 +1,8 @@
 // SECTION Calculator class
 class Calculator {
+  // TODO - Add event delegation logic instead of adding listeners to each button
+  // TODO - Refactor every outer logic to an inner class logic
+
   #buttonsObj = {
     0: '0',
     1: '1',
@@ -16,13 +19,13 @@ class Calculator {
     '*': '*',
     '/': '/',
     '.': '.',
-    ',': '.', // <- Rus key
+    ',': '.', // <- // NOTE - Rus key
     Backspace: '->',
     Delete: 'C',
     C: 'C',
     c: 'C',
-    с: 'C', // <- Rus key
-    С: 'C', // <- Rus key
+    с: 'C', // <- // NOTE - Rus key
+    С: 'C', // <- // NOTE - Rus key
     '=': '=',
     Enter: '=',
   };
