@@ -378,6 +378,7 @@ class Calculator {
       default:
         throw new Error('#signListener switch error: DEFAULT CASE CAUSED!');
     } // !SECTION
+
     this.#refreshResult();
   };
 
@@ -409,6 +410,7 @@ class Calculator {
   #createHtmlButton = (el) => {
     const btn = document.createElement('button');
     const text = document.createTextNode(el);
+
     btn.appendChild(text);
     btn.type = 'button';
     btn.id = el;
@@ -516,8 +518,6 @@ class Calculator {
 } // !SECTION Calculator class
 
 const calculator = new Calculator();
-
-console.log(calculator);
 
 calculator.initialize();
 // // NOTE - Last string
