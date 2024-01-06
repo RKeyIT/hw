@@ -1,33 +1,33 @@
 // SECTION Calculator class
 class Calculator {
   // TODO - Add event delegation logic instead of adding listeners to each button
-  // TODO - Refactor every outer logic to an inner class logic
+
+  #UI = {
+    digits: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+    signs: ['+', '-', '*', '/', '+/-', '->', 'C', '.', '='],
+    calculatorDiv: null,
+    resultWindowDiv: null,
+    currentValueDiv: null,
+    previousValueDiv: null,
+    mathSignDiv: null,
+    buttonsDiv: null,
+  };
 
   #buttonsObj = {
-    0: '0',
-    1: '1',
-    2: '2',
-    3: '3',
-    4: '4',
-    5: '5',
-    6: '6',
-    7: '7',
-    8: '8',
-    9: '9',
+    ...this.#UI.digits,
     '+': '+',
     '-': '-',
     '*': '*',
     '/': '/',
-    '.': '.',
-    ',': '.', // <- // NOTE - Rus key
-    Backspace: '->',
-    Delete: 'C',
-    C: 'C',
-    c: 'C',
-    с: 'C', // <- // NOTE - Rus key
-    С: 'C', // <- // NOTE - Rus key
     '=': '=',
-    Enter: '=',
+    ',': '.', // <- // NOTE - Rus key - Additional . (decimal dot) behavior button
+    Backspace: '->',
+    Delete: 'C', // <- // NOTE - Additional C (reset) behavior button
+    c: 'C', // <- // NOTE - Additional C (reset) behavior button
+    C: 'C', // <- // NOTE - Additional C (reset) behavior button
+    с: 'C', // <- // NOTE - Rus key - Additional C (reset) behavior button
+    С: 'C', // <- // NOTE - Rus key - Additional C (reset) behavior button
+    Enter: '=', // <- // NOTE - Additional = (equality) behavior button
   };
 
   #operationsObj = {
@@ -140,9 +140,9 @@ class Calculator {
       result = this.a || this.#prevResult;
     }
 
-    currentValue.innerText = result;
-    previousValue.innerText = this.#error || this.#prevResult;
-    mathSign.innerText = this.#sign || 'S';
+    this.#UI.currentValueDiv.innerText = result;
+    this.#UI.previousValueDiv.innerText = this.#error || this.#prevResult;
+    this.#UI.mathSignDiv.innerText = this.#sign || 'S';
   }; // !SECTION
 
   // SECTION - handle big num notation
@@ -222,12 +222,12 @@ class Calculator {
   }; // !SECTION
 
   // SECTION - Add Listener method
-  addHandlerOnBtn = (key, handler) => {
+  #addHandlerOnBtn = (key, handler) => {
     this.#buttonsObj[key] && handler(this.#buttonsObj[key]);
   }; // !SECTION
 
   // SECTION - Digit Listener
-  digitListener = (el) => {
+  #digitListener = (el) => {
     const currentOperand = this.#isSign() ? 'b' : 'a';
 
     const isCorrectLength = (num) => num.length <= this.#maxInputLength;
@@ -286,7 +286,7 @@ class Calculator {
   }; // !SECTION
 
   // SECTION - Sign Listener
-  signListener = (newSign) => {
+  #signListener = (newSign) => {
     switch (newSign) {
       case '+':
       case '*':
@@ -322,7 +322,7 @@ class Calculator {
         }
 
         throw new Error(
-          'signListener: switch-case (+-*/): Every of conditions were falsely!'
+          '#signListener: switch-case (+-*/): Every of conditions were falsely!'
         );
 
       case '=':
@@ -382,115 +382,148 @@ class Calculator {
         break;
 
       default:
-        throw new Error('signListener switch error: DEFAULT CASE CAUSED');
+        throw new Error('#signListener switch error: DEFAULT CASE CAUSED!');
     } // !SECTION
-
     this.#refreshResult();
+  };
+
+  #generateSignClassName = (el) => {
+    switch (el) {
+      case '+':
+        return 'plus';
+      case '-':
+        return 'minus';
+      case '*':
+        return 'multiply';
+      case '/':
+        return 'divide';
+      case '+/-':
+        return 'invert';
+      case '->':
+        return 'delete';
+      case 'C':
+        return 'reset';
+      case '.':
+        return 'dot';
+      case '=':
+        return 'equal';
+      default:
+        throw new Error('#generateSignClassName: Default case caused!');
+    }
+  };
+
+  #createHtmlButton = (el) => {
+    const btn = document.createElement('button');
+    const text = document.createTextNode(el);
+    btn.appendChild(text);
+    btn.type = 'button';
+    btn.id = el;
+
+    if (!isNaN(+el)) {
+      btn.addEventListener('click', () => this.#digitListener(el));
+      btn.className = `btn digit ${el}`;
+      btn.style = `grid-area: d${el}`;
+    } else {
+      btn.addEventListener('click', () => this.#signListener(el));
+      btn.className = `btn sign ${this.#generateSignClassName(el)}`;
+      btn.style = `grid-area: ${this.#generateSignClassName(el)}`;
+    }
+
+    return btn;
+  };
+
+  // SECTION - Button active class switchers
+  #initializeActiveClassLogic = () => {
+    document.body.addEventListener('keydown', (e) => {
+      function addActiveClass(id) {
+        const element = document.getElementById(id);
+        element.classList.add('active');
+      }
+
+      this.#addHandlerOnBtn(e.key, addActiveClass);
+    });
+
+    document.body.addEventListener('keyup', (e) => {
+      function removeActiveClass(id) {
+        const element = document.getElementById(id);
+        element.classList.remove('active');
+      }
+
+      this.#addHandlerOnBtn(e.key, removeActiveClass);
+    });
+  }; // !SECTION
+
+  // SECTION - Operations and numbers global keyboard listener
+  #initializeKeyboardTyping = () => {
+    document.body.addEventListener('keydown', (e) => {
+      if (!this.buttonsObj[e.key]) return;
+
+      if (isNaN(+e.key)) {
+        this.#addHandlerOnBtn(e.key, this.#signListener);
+      } else {
+        this.#addHandlerOnBtn(e.key, this.#digitListener);
+      }
+    }); // !SECTION
+  };
+
+  #initializeUIContainers = () => {
+    const container = document.getElementById('calculatorContainer');
+
+    this.#UI.calculatorDiv = document.createElement('div');
+    this.#UI.calculatorDiv.className = 'calculator';
+
+    this.#UI.resultWindowDiv = document.createElement('div');
+    this.#UI.resultWindowDiv.className = 'result';
+
+    this.#UI.currentValueDiv = document.createElement('div');
+    this.#UI.currentValueDiv.className = 'currentValue';
+    this.#UI.currentValueDiv.appendChild(document.createTextNode('0'));
+
+    this.#UI.previousValueDiv = document.createElement('div');
+    this.#UI.previousValueDiv.className = 'previousValue';
+    this.#UI.previousValueDiv.appendChild(document.createTextNode('0'));
+
+    this.#UI.mathSignDiv = document.createElement('div');
+    this.#UI.mathSignDiv.className = 'mathSign';
+    this.#UI.mathSignDiv.appendChild(document.createTextNode('S'));
+
+    this.#UI.buttonsDiv = document.createElement('div');
+    this.#UI.buttonsDiv.className = 'buttons';
+
+    this.#UI.resultWindowDiv.appendChild(this.#UI.currentValueDiv);
+    this.#UI.resultWindowDiv.appendChild(this.#UI.previousValueDiv);
+    this.#UI.resultWindowDiv.appendChild(this.#UI.mathSignDiv);
+
+    this.#UI.calculatorDiv.appendChild(this.#UI.resultWindowDiv);
+    this.#UI.calculatorDiv.appendChild(this.#UI.buttonsDiv);
+
+    container.appendChild(this.#UI.calculatorDiv);
+  };
+
+  #initializeUIButtons = () => {
+    const digitButtons = this.#UI.digits.map(this.#createHtmlButton);
+    const signButtons = this.#UI.signs.map(this.#createHtmlButton);
+
+    for (let i = 0; i < digitButtons.length; i++) {
+      this.#UI.buttonsDiv.appendChild(digitButtons[i]);
+    }
+
+    for (let i = 0; i < signButtons.length; i++) {
+      this.#UI.buttonsDiv.appendChild(signButtons[i]);
+    }
+  };
+
+  initialize = () => {
+    this.#initializeUIContainers();
+    this.#initializeUIButtons();
+    this.#initializeActiveClassLogic();
+    this.#initializeKeyboardTyping();
   };
 } // !SECTION Calculator class
 
 const calculator = new Calculator();
 
-// SECTION - Operations and numbers global listener
-document.body.addEventListener('keydown', (e) => {
-  if (!calculator.buttonsObj[e.key]) return;
+console.log(calculator);
 
-  if (isNaN(+e.key)) {
-    calculator.addHandlerOnBtn(e.key, calculator.signListener);
-  } else {
-    calculator.addHandlerOnBtn(e.key, calculator.digitListener);
-  }
-}); // !SECTION
-
-// SECTION - Button active class switchers
-document.body.addEventListener('keydown', (e) => {
-  function addActiveClass(id) {
-    const element = document.getElementById(id);
-    element.classList.add('active');
-  }
-
-  calculator.addHandlerOnBtn(e.key, addActiveClass);
-});
-document.body.addEventListener('keyup', (e) => {
-  function removeActiveClass(id) {
-    const element = document.getElementById(id);
-    element.classList.remove('active');
-  }
-
-  calculator.addHandlerOnBtn(e.key, removeActiveClass);
-}); // !SECTION
-
-const currentValue = document.getElementById('currentValue');
-currentValue.innerText = calculator.a || '0';
-
-const previousValue = document.getElementById('previousValue');
-previousValue.innerText = calculator.prevResult || '0';
-
-const mathSign = document.getElementById('mathSign');
-mathSign.innerText = calculator.sign || 'S';
-
-const UIDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].map(
-  createButton
-);
-const UIOps = ['+', '-', '*', '/', '+/-', '->', 'C', '.', '='].map(
-  createButton
-);
-
-function createButton(el) {
-  const btn = document.createElement('button');
-  const text = document.createTextNode(el);
-  btn.appendChild(text);
-  btn.type = 'button';
-  btn.id = el;
-
-  if (!isNaN(+el)) {
-    btn.addEventListener('click', () => calculator.digitListener(el));
-    btn.className = `btn digit ${el}`;
-    btn.style = `grid-area: d${el}`;
-  } else {
-    btn.addEventListener('click', () => calculator.signListener(el));
-    btn.className = `btn sign ${generateSignName(el)}`;
-    btn.style = `grid-area: ${generateSignName(el)}`;
-  }
-
-  return btn;
-}
-
-function generateSignName(el) {
-  switch (el) {
-    case '+':
-      return 'plus';
-    case '-':
-      return 'minus';
-    case '*':
-      return 'multiply';
-    case '/':
-      return 'divide';
-    case '+/-':
-      return 'invert';
-    case '->':
-      return 'delete';
-    case 'C':
-      return 'reset';
-    case '.':
-      return 'dot';
-    case '=':
-      return 'equal';
-    default:
-      throw new Error('Somebody brokes the apllication!');
-  }
-}
-
-const buttonsContainer = document.getElementById('buttons');
-function renderButtons() {
-  for (let i = 0; i < UIDigits.length; i++) {
-    buttonsContainer.appendChild(UIDigits[i]);
-  }
-
-  for (let i = 0; i < UIOps.length; i++) {
-    buttonsContainer.appendChild(UIOps[i]);
-  }
-}
-
-renderButtons();
-// NOTE - Last string
+calculator.initialize();
+// // NOTE - Last string
