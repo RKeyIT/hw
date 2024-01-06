@@ -31,10 +31,10 @@ class Calculator {
   };
 
   #operationsObj = {
-    '+': () => String(+this.a + +this.b),
-    '-': () => String(+this.a - +this.b),
-    '*': () => String(+this.a * +this.b),
-    '/': () => String(+this.a / +this.b),
+    '+': () => String(+this.#a + +this.#b),
+    '-': () => String(+this.#a - +this.#b),
+    '*': () => String(+this.#a * +this.#b),
+    '/': () => String(+this.#a / +this.#b),
   };
 
   #a = null;
@@ -55,49 +55,17 @@ class Calculator {
     this.#maxFractionLength = maxFractLength;
   }
 
-  get a() {
-    return this.#a;
-  }
-
-  set a(value) {
-    this.#a = value;
-  }
-
-  get b() {
-    return this.#b;
-  }
-
-  set b(value) {
-    this.#b = value;
-  }
-
-  get prevOperation() {
-    return this.#prevOperation;
-  }
-
-  set prevOperation(arrOrNull) {
-    this.#prevOperation = arrOrNull;
-  }
-
-  get operationsObj() {
-    return this.#operationsObj;
-  }
-
-  get buttonsObj() {
-    return this.#buttonsObj;
-  }
-
-  #isA = () => this.a !== null;
-  #isB = () => this.b !== null;
+  #isA = () => this.#a !== null;
+  #isB = () => this.#b !== null;
   #isSign = () => this.#sign !== null;
 
   // SECTION - Calculate
   #calculate = () => {
-    if (this.#sign === '/' && this.b === '0') {
+    if (this.#sign === '/' && this.#b === '0') {
       return this.#resetState('0', "Error: Can't devide by zero!");
     }
 
-    const operation = this.operationsObj[this.#sign];
+    const operation = this.#operationsObj[this.#sign];
     const calculated = this.#resultToFixed(operation());
     const isUnsafeResultLength = calculated.length > this.#maxResultLength;
 
@@ -106,18 +74,18 @@ class Calculator {
 
       return bigNum === '0'
         ? this.#resetState(bigNum, 'Error: Too big number!')
-        : this.#resetState(bigNum, null, [this.#sign, this.b]);
+        : this.#resetState(bigNum, null, [this.#sign, this.#b]);
     }
 
-    return this.#resetState(calculated, null, [this.#sign, this.b]);
+    return this.#resetState(calculated, null, [this.#sign, this.#b]);
   }; // !SECTION
 
   // SECTION - Reset State
   #resetState = (toPrevResult = '0', error = null, prevOperation = null) => {
     this.#prevResult = toPrevResult;
-    this.prevOperation = prevOperation;
-    this.a = null;
-    this.b = null;
+    this.#prevOperation = prevOperation;
+    this.#a = null;
+    this.#b = null;
     this.#sign = null;
     this.#error = error;
     this.#resetFraction();
@@ -135,9 +103,9 @@ class Calculator {
     let result;
 
     if (this.#isSign()) {
-      result = this.#isB() ? this.b : this.#sign;
+      result = this.#isB() ? this.#b : this.#sign;
     } else {
-      result = this.a || this.#prevResult;
+      result = this.#a || this.#prevResult;
     }
 
     this.#UI.currentValueDiv.innerText = result;
@@ -164,17 +132,18 @@ class Calculator {
         return '0';
       }
 
+      console.log('CASE 1/4: ', bigNumString, ' : ', bigNumString.length);
       return String(parseFloat(bigNumString).toFixed(decreasableLength));
     }
 
     // CASE 2: Decimal dot on or out of max bound value
     if (isDecOutOfLength) {
-      bigNumString = +bigNumString.round();
+      bigNumString = Math.round(bigNumString);
       this.#resetFraction();
     }
 
     // CASE 3: Number length is out of max result length
-    if (bigNumString.length > this.#maxResultLength) {
+    if (String(bigNumString).length > this.#maxResultLength) {
       bigNumString = parseInt(bigNumString).toExponential(
         this.#maxFractionLength
       );
@@ -247,12 +216,18 @@ class Calculator {
     };
 
     const setFraction = (operand) => {
+      if (operand !== 'a' && operand !== 'b') {
+        throw new Error(
+          `Received wrong operand === ${operand}. Expected string 'a' or 'b'`
+        );
+      }
+
       if (this.#isSign() && !this.#isB()) {
-        this.b = '0';
+        this.#b = '0';
       }
 
       if (!this.#isA()) {
-        this.a = '0';
+        this.#a = '0';
       }
 
       if (this.#fraction === null) {
@@ -263,16 +238,35 @@ class Calculator {
           : this.#fraction;
       }
 
-      this[operand] = this[operand].replace(/(\d+).*/, '$1');
-      this[operand] += '.' + this.#fraction;
+      if (operand === 'a') {
+        this.#a = this.#a.replace(/(\d+).*/, '$1');
+        this.#a += '.' + this.#fraction;
 
-      return this[operand];
+        return this.#a;
+      } else {
+        this.#b = this.#b.replace(/(\d+).*/, '$1');
+        this.#b += '.' + this.#fraction;
+
+        return this.#b;
+      }
     };
 
     const setOperand = (operand) => {
       // operand = 'a' || 'b'
-      if (this[operand] === null || isCorrectLength(this[operand])) {
-        this[operand] = setNumber(this[operand]);
+      if (operand !== 'a' && operand !== 'b') {
+        throw new Error(
+          `Received wrong operand === ${operand}. Expected string 'a' or 'b'`
+        );
+      }
+
+      if (operand === 'a') {
+        if (!this.#isA() || isCorrectLength(this.#a)) {
+          this.#a = setNumber(this.#a);
+        }
+      } else {
+        if (!this.#isB() || isCorrectLength(this.#b)) {
+          this.#b = setNumber(this.#b);
+        }
       }
     };
 
@@ -304,19 +298,19 @@ class Calculator {
 
         if (this.#isA() && this.#isB()) {
           this.#calculate();
-          this.a = this.#prevResult;
+          this.#a = this.#prevResult;
           this.#sign = newSign;
           break;
         }
 
         if (this.#isA() && !this.#isB()) {
-          this.#prevResult = this.a;
+          this.#prevResult = this.#a;
           this.#sign = newSign;
           break;
         }
 
         if (!this.#isA()) {
-          this.a = this.#prevResult;
+          this.#a = this.#prevResult;
           this.#sign = newSign;
           break;
         }
@@ -331,28 +325,28 @@ class Calculator {
           break;
         }
 
-        if (this.prevOperation) {
-          this.a = this.#prevResult;
-          this.#sign = this.prevOperation[0];
-          this.b = this.prevOperation[1];
+        if (this.#prevOperation) {
+          this.#a = this.#prevResult;
+          this.#sign = this.#prevOperation[0];
+          this.#b = this.#prevOperation[1];
           this.#calculate();
           break;
         }
 
       case '+/-':
         if (!this.#isA()) {
-          this.a = this.#prevResult;
+          this.#a = this.#prevResult;
         }
 
-        this.#isB() ? (this.b = `${-+this.b}`) : (this.a = `${-+this.a}`);
+        this.#isB() ? (this.#b = `${-+this.#b}`) : (this.#a = `${-+this.#a}`);
         break;
 
       case '->':
         this.#isB()
-          ? (this.b = this.#removeOneDigit(this.b))
+          ? (this.#b = this.#removeOneDigit(this.#b))
           : this.#isA()
-          ? (this.a = this.#removeOneDigit(this.a))
-          : (this.a = this.#removeOneDigit(this.#prevResult));
+          ? (this.#a = this.#removeOneDigit(this.#a))
+          : (this.#a = this.#removeOneDigit(this.#prevResult));
         break;
 
       case 'C':
@@ -369,15 +363,15 @@ class Calculator {
         }
 
         if (this.#isSign() && !this.#isB()) {
-          this.b = '0';
+          this.#b = '0';
         }
 
         if (!this.#isA()) {
-          this.a = '0';
+          this.#a = '0';
         }
 
         // NOTE - Visual putting dot to existed operand
-        this.#isB() ? (this.b += '.') : (this.a += '.');
+        this.#isB() ? (this.#b += '.') : (this.#a += '.');
 
         break;
 
@@ -456,7 +450,7 @@ class Calculator {
   // SECTION - Operations and numbers global keyboard listener
   #initializeKeyboardTyping = () => {
     document.body.addEventListener('keydown', (e) => {
-      if (!this.buttonsObj[e.key]) return;
+      if (!this.#buttonsObj[e.key]) return;
 
       if (isNaN(+e.key)) {
         this.#addHandlerOnBtn(e.key, this.#signListener);
