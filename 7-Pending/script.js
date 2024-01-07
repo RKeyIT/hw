@@ -1,7 +1,5 @@
 // SECTION Calculator class
 class Calculator {
-  // TODO - Add event delegation logic instead of adding listeners to each button
-
   #UI = {
     digits: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
     signs: ['+', '-', '*', '/', '+/-', '->', 'C', '.', '='],
@@ -133,7 +131,6 @@ class Calculator {
         return '0';
       }
 
-      console.log('CASE 1/4: ', bigNumString, ' : ', bigNumString.length);
       return String(parseFloat(bigNumString).toFixed(decreasableLength));
     }
 
@@ -189,11 +186,6 @@ class Calculator {
     }
 
     return numString.replace(/(.+).\b/, '$1');
-  }; // !SECTION
-
-  // SECTION - Add Listener method
-  #addHandlerOnBtn = (key, handler) => {
-    this.#buttonsObj[key] && handler(this.#buttonsObj[key]);
   }; // !SECTION
 
   // SECTION - Digit Listener
@@ -417,50 +409,14 @@ class Calculator {
     btn.id = el;
 
     if (!isNaN(+el)) {
-      btn.addEventListener('click', () => this.#digitListener(el));
       btn.className = `btn digit ${el}`;
       btn.style = `grid-area: d${el}`;
     } else {
-      btn.addEventListener('click', () => this.#signListener(el));
       btn.className = `btn sign ${this.#generateSignClassName(el)}`;
       btn.style = `grid-area: ${this.#generateSignClassName(el)}`;
     }
 
     return btn;
-  };
-
-  // SECTION - Button active class switchers
-  #initializeActiveClassLogic = () => {
-    document.body.addEventListener('keydown', (e) => {
-      function addActiveClass(id) {
-        const element = document.getElementById(id);
-        element.classList.add('active');
-      }
-
-      this.#addHandlerOnBtn(e.key, addActiveClass);
-    });
-
-    document.body.addEventListener('keyup', (e) => {
-      function removeActiveClass(id) {
-        const element = document.getElementById(id);
-        element.classList.remove('active');
-      }
-
-      this.#addHandlerOnBtn(e.key, removeActiveClass);
-    });
-  }; // !SECTION
-
-  // SECTION - Operations and numbers global keyboard listener
-  #initializeKeyboardTyping = () => {
-    document.body.addEventListener('keydown', (e) => {
-      if (!this.#buttonsObj[e.key]) return;
-
-      if (isNaN(+e.key)) {
-        this.#addHandlerOnBtn(e.key, this.#signListener);
-      } else {
-        this.#addHandlerOnBtn(e.key, this.#digitListener);
-      }
-    }); // !SECTION
   };
 
   #initializeUIContainers = (htmlContainer) => {
@@ -506,6 +462,57 @@ class Calculator {
     for (let i = 0; i < signButtons.length; i++) {
       this.#UI.buttonsDiv.appendChild(signButtons[i]);
     }
+
+    // NOTE - Adding click listener with event delegation.
+    this.#UI.buttonsDiv.addEventListener('click', (e) => {
+      if (!(e.target instanceof HTMLButtonElement)) {
+        return;
+      }
+
+      const element = e.target.id;
+
+      if (this.#UI.signs.some((el) => el === element)) {
+        return this.#signListener(element);
+      }
+
+      if (this.#UI.digits.some((el) => el === element)) {
+        return this.#digitListener(element);
+      }
+
+      console.error('Some unhandled entity was clicked!');
+    });
+
+    // NOTE - Adding keydown listener with event delegation.
+    document.body.addEventListener('keydown', (e) => {
+      const btn = this.#buttonsObj[e.key];
+
+      if (btn) {
+        const element = document.getElementById(btn);
+
+        element.classList.add('active');
+
+        if (this.#UI.digits.some((el) => el === btn)) {
+          this.#digitListener(btn);
+        } else {
+          this.#signListener(btn);
+        }
+      }
+
+      return;
+    });
+
+    // NOTE - Adding keyup listener with event delegation.
+    document.body.addEventListener('keyup', (e) => {
+      const key = e.key;
+
+      if (this.#buttonsObj[key]) {
+        const element = document.getElementById(this.#buttonsObj[key]);
+
+        element.classList.remove('active');
+      }
+
+      return;
+    });
   };
 
   initialize = (htmlContainer) => {
@@ -518,8 +525,6 @@ class Calculator {
 
     this.#initializeUIContainers(htmlContainer);
     this.#initializeUIButtons();
-    this.#initializeActiveClassLogic();
-    this.#initializeKeyboardTyping();
   };
 } // !SECTION Calculator class
 
