@@ -219,7 +219,7 @@ class Calculator {
     const setFraction = (operand) => {
       if (operand !== 'a' && operand !== 'b') {
         throw new Error(
-          `Received wrong operand === ${operand}. Expected string 'a' or 'b'`
+          `Received wrong operand === ${operand}. Expected: a || b`
         );
       }
 
@@ -256,7 +256,7 @@ class Calculator {
       // operand = 'a' || 'b'
       if (operand !== 'a' && operand !== 'b') {
         throw new Error(
-          `Received wrong operand === ${operand}. Expected string 'a' or 'b'`
+          `Received wrong operand === ${operand}. Expected: a || b`
         );
       }
 
@@ -317,7 +317,7 @@ class Calculator {
         }
 
         throw new Error(
-          '#signListener: switch-case (+-*/): Every of conditions were falsely!'
+          'switch-case (+-*/): Every of conditions were falsely!'
         );
 
       case '=':
@@ -377,7 +377,7 @@ class Calculator {
         break;
 
       default:
-        throw new Error('#signListener switch error: DEFAULT CASE CAUSED!');
+        throw new Error('DEFAULT CASE CAUSED!');
     } // !SECTION
 
     this.#refreshResult();
@@ -404,7 +404,7 @@ class Calculator {
       case '=':
         return 'equal';
       default:
-        throw new Error('#generateSignClassName: Default case caused!');
+        throw new Error('DEFAULT CASE CAUSED!');
     }
   };
 
