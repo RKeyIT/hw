@@ -20,6 +20,7 @@ class Calculator {
     '*': '*',
     '/': '/',
     '=': '=',
+    '.': '.',
     ',': '.', // <- // NOTE - Rus key - Additional . (decimal dot) behavior button
     Backspace: '->',
     Delete: 'C', // <- // NOTE - Additional C (reset) behavior button
@@ -49,7 +50,7 @@ class Calculator {
   #maxResultLength;
   #maxFractionLength;
 
-  constructor(maxInputLength = 10, maxFractLength = 8, maxResLength = 15) {
+  constructor(maxInputLength = 10, maxFractLength = 8, maxResLength = 14) {
     this.#maxInputLength = maxInputLength;
     this.#maxResultLength = maxResLength;
     this.#maxFractionLength = maxFractLength;
@@ -462,9 +463,7 @@ class Calculator {
     }); // !SECTION
   };
 
-  #initializeUIContainers = () => {
-    const container = document.getElementById('calculatorContainer');
-
+  #initializeUIContainers = (htmlContainer) => {
     this.#UI.calculatorDiv = document.createElement('div');
     this.#UI.calculatorDiv.className = 'calculator';
 
@@ -493,7 +492,7 @@ class Calculator {
     this.#UI.calculatorDiv.appendChild(this.#UI.resultWindowDiv);
     this.#UI.calculatorDiv.appendChild(this.#UI.buttonsDiv);
 
-    container.appendChild(this.#UI.calculatorDiv);
+    htmlContainer.appendChild(this.#UI.calculatorDiv);
   };
 
   #initializeUIButtons = () => {
@@ -509,8 +508,15 @@ class Calculator {
     }
   };
 
-  initialize = () => {
-    this.#initializeUIContainers();
+  initialize = (htmlContainer) => {
+    if (!(htmlContainer instanceof HTMLElement)) {
+      throw new Error(
+        'Calculator initialize method ' +
+          'wait for html element as a container for calculator'
+      );
+    }
+
+    this.#initializeUIContainers(htmlContainer);
     this.#initializeUIButtons();
     this.#initializeActiveClassLogic();
     this.#initializeKeyboardTyping();
@@ -518,6 +524,6 @@ class Calculator {
 } // !SECTION Calculator class
 
 const calculator = new Calculator();
+const container = document.getElementById('calculatorContainer');
 
-calculator.initialize();
-// // NOTE - Last string
+calculator.initialize(container);
