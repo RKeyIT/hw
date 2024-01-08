@@ -418,6 +418,14 @@ class Calculator {
       btn.style = `grid-area: ${this.#generateSignClassName(el)}`;
     }
 
+    // NOTE - Bluring focused element
+    /* 
+      If we're clicked a button the focus behavior caused.
+      It means that if we'll use the Enter button after it 
+      the focused element will be clicked again.
+      Unexpected and needless behavior.
+      'Enter' key is strictly for '=' operation
+    */
     btn.addEventListener('focus', (e) => {
       if (this.#buttonsObj[e.target.id]) {
         const element = document.getElementById(e.target.id);
