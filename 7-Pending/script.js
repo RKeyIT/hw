@@ -416,6 +416,14 @@ class Calculator {
       btn.style = `grid-area: ${this.#generateSignClassName(el)}`;
     }
 
+    btn.addEventListener('focus', (e) => {
+      if (this.#buttonsObj[e.target.id]) {
+        const element = document.getElementById(e.target.id);
+
+        element.blur();
+      }
+    });
+
     return btn;
   };
 
