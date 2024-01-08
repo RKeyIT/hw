@@ -367,7 +367,6 @@ class Calculator {
 
         // NOTE - Visual putting dot to existed operand
         this.#isB() ? (this.#b += '.') : (this.#a += '.');
-
         break;
 
       default:
