@@ -126,7 +126,7 @@ class Calculator {
 
     // CASE 1: If decreasing of decimal part can save the normal number
     if (decreasableLength > 1) {
-      // CASE 4: Too big number -> #resetState with error
+      // CASE 4: Too big number > 9e+20 -> #resetState with error
       if (bigNumString.indexOf('.') === 1) {
         return '0';
       }
@@ -318,13 +318,15 @@ class Calculator {
           break;
         }
 
-        if (this.#prevOperation) {
+        if (!this.#isA() && this.#prevOperation) {
           this.#a = this.#prevResult;
           this.#sign = this.#prevOperation[0];
           this.#b = this.#prevOperation[1];
           this.#calculate();
           break;
         }
+
+        break;
 
       case '+/-':
         if (!this.#isA()) {
@@ -471,26 +473,26 @@ class Calculator {
       this.#UI.buttonsDiv.appendChild(signButtons[i]);
     }
 
-    // NOTE - Adding click listener with event delegation.
+    // NOTE - Adding click listener using event delegation.
     this.#UI.buttonsDiv.addEventListener('click', (e) => {
       if (!(e.target instanceof HTMLButtonElement)) {
         return;
       }
 
-      const element = e.target.id;
+      const elementId = e.target.id;
 
-      if (this.#UI.signs.some((el) => el === element)) {
-        return this.#signListener(element);
+      if (this.#UI.signs.some((el) => el === elementId)) {
+        return this.#signListener(elementId);
       }
 
-      if (this.#UI.digits.some((el) => el === element)) {
-        return this.#digitListener(element);
+      if (this.#UI.digits.some((el) => el === elementId)) {
+        return this.#digitListener(elementId);
       }
 
       console.error('Some unhandled entity was clicked!');
     });
 
-    // NOTE - Adding keydown listener with event delegation.
+    // NOTE - Adding keydown listener using event delegation.
     document.body.addEventListener('keydown', (e) => {
       const btn = this.#buttonsObj[e.key];
 
@@ -509,7 +511,7 @@ class Calculator {
       return;
     });
 
-    // NOTE - Adding keyup listener with event delegation.
+    // NOTE - Adding keyup listener using event delegation.
     document.body.addEventListener('keyup', (e) => {
       const key = e.key;
 
