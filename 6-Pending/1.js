@@ -186,7 +186,7 @@ class Car {
   }
 
   fillUpGasTank(liters) {
-    if (!Number.isSafeInteger(liters) || liters <= 0) {
+    if (isNaN(parseFloat(liters)) || liters <= 0) {
       throw new Error('Неверное количество топлива для заправки');
     }
 
@@ -205,16 +205,16 @@ class Car {
   }
 
   #isCanDrive(speed, hours) {
-    if (!Number.isSafeInteger(speed) || speed <= 0 || speed > this.maxSpeed) {
+    if (isNaN(speed) || speed <= 0) {
       throw new Error('Неверная скорость');
-    }
-
-    if (isNaN(hours) || !isFinite(hours) || hours <= 0) {
-      throw new Error('Неверное количество часов');
     }
 
     if (speed > this.maxSpeed) {
       throw new Error('Машина не может ехать так быстро');
+    }
+
+    if (isNaN(hours) || !isFinite(hours) || hours <= 0) {
+      throw new Error('Неверное количество часов');
     }
 
     if (!this.isStarted) {
