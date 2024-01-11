@@ -422,8 +422,8 @@ class Calculator {
       If we're clicked a button the focus behavior caused.
       It means that if we'll use the Enter button after it 
       the focused element will be clicked again.
-      Unexpected and needless behavior.
-      'Enter' key is strictly for '=' operation
+      It's an unexpected and needless behavior.
+      'Enter' key is strictly for the '=' operation
     */
     btn.addEventListener('focus', (e) => {
       if (this.#buttonsObj[e.target.id]) {
