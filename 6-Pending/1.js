@@ -85,6 +85,10 @@ class Car {
   }
 
   set brand(name) {
+    if (typeof name !== 'string') {
+      throw new TypeError(`Ожидается строка вместо ${typeof name}`);
+    }
+
     if (name.length < 1 || name.length > 50) {
       throw new Error('Длинна названия бренда должна быть от 1 до 50 знаков');
     }
@@ -98,6 +102,10 @@ class Car {
   }
 
   set model(name) {
+    if (typeof name !== 'string') {
+      throw new TypeError(`Ожидается строка вместо ${typeof name}`);
+    }
+
     if (name.length < 1 || name.length > 50) {
       throw new Error('Длинна названия модели должна быть от 1 до 50 знаков');
     }
@@ -111,6 +119,14 @@ class Car {
   }
 
   set yearOfManufacturing(year) {
+    if (typeof year !== 'number') {
+      throw new TypeError(`Ожидается number вместо ${typeof year}`);
+    }
+
+    if (!Number.isSafeInteger(year)) {
+      throw new Error('Ожидается целое число, вместо дробного');
+    }
+
     if (year < 1900 || year > new Date().getFullYear()) {
       throw new Error('Неверный год производства');
     }
@@ -124,6 +140,14 @@ class Car {
   }
 
   set maxSpeed(speed) {
+    if (typeof speed !== 'number') {
+      throw new TypeError(`Ожидается number вместо ${typeof speed}`);
+    }
+
+    if (!Number.isSafeInteger(speed)) {
+      throw new Error('Ожидается целое число, вместо дробного');
+    }
+
     if (speed < 100 || speed > 300) {
       throw new Error(
         'Допустимая максимальная скорость в диапазоне от 100 до 300 км/ч'
@@ -139,6 +163,14 @@ class Car {
   }
 
   set maxFuelVolume(volume) {
+    if (typeof volume !== 'number') {
+      throw new TypeError(`Ожидается number вместо ${typeof volume}`);
+    }
+
+    if (!Number.isSafeInteger(volume)) {
+      throw new Error('Ожидается целое число, вместо дробного');
+    }
+
     if (volume < 5 || volume > 20) {
       throw new Error('Максимальный объём топлива от 5 до 20 литров');
     }
@@ -152,6 +184,14 @@ class Car {
   }
 
   set fuelConsumption(consumption) {
+    if (typeof consumption !== 'number') {
+      throw new TypeError(`Ожидается number вместо ${typeof consumption}`);
+    }
+
+    if (consumption <= 0) {
+      throw new Error('Потребление не может быть нулевым или отрицательным');
+    }
+
     this.#fuelConsumption = consumption / 100;
   }
 
@@ -177,6 +217,7 @@ class Car {
 
     this.#isStarted = true;
   }
+
   shutDownEngine() {
     if (!this.#isStarted) {
       throw new Error('Машина ещё не заведена');
@@ -190,7 +231,9 @@ class Car {
       throw new Error('Неверное количество топлива для заправки');
     }
 
-    if (this.#currentFuelVolume + liters > this.#maxFuelVolume) {
+    const resultOfFilling = this.#currentFuelVolume + liters;
+
+    if (resultOfFilling >= this.#maxFuelVolume + 1) {
       throw new Error('Топливный бак переполнен');
     }
 
@@ -239,6 +282,7 @@ car.start();
 car.drive(100, 8.3);
 // car.shutDownEngine();
 car.drive(100, 0.2);
+car.fillUpGasTank(17);
 
 console.log(car.currentFuelVolume);
 console.log(car.mileage);
