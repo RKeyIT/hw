@@ -409,7 +409,7 @@ class Calculator {
     btn.type = 'button';
     btn.id = el;
 
-    if (!isNaN(+el)) {
+    if (!isNaN(el)) {
       btn.className = `btn digit ${el}`;
       btn.style = `grid-area: d${el}`;
     } else {
