@@ -1,1 +1,1 @@
-# Homework tasks during Andersen JS Intensive training
+# Homework tasks during JS Intensive training
